@@ -1,8 +1,8 @@
 <?php
 
 // The web root. The path that can be used when linking (to js, css, ...)
-// This should probably be something like http://localhost/stacklife
-$www_root = "http://example.com/stacklife";
+// This should probably be something like http://localhost/
+$www_root = "http://localhost/src/web/";
 
 // Build version
 $version = "alpha 2.3";
