@@ -1,5 +1,4 @@
 <?php
-  //require_once('../../etc/sl_ini.php');
     require_once('../../etc/sl_ini.php');
 ?>
 

@@ -46,15 +46,32 @@
         
                 
         // Do we need to set default like this, or does StackView do that for us?
-        $static_doc = array('title' => 'Uknown Title', 'creator' => array(), 'measurement_page_numeric' => 0, 'measurement_height_numeric' => 0, 'pub_date' => 0);
+        $static_doc = array('title' => 'Unknown Title', 'creator' => array(), 'measurement_page_numeric' => 0, 'measurement_height_numeric' => 0, 'pub_date' => 0);
 
         // The labels in LC and the Awesome API don't always match. Let's align those here.        
         if (property_exists($item->titleInfo, 'title') && !empty($item->titleInfo->title)) {
-            $static_doc['title'] = $item->titleInfo->title;
+            $static_doc['title'] =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
+           
+        }else{
+            if (property_exists($item->titleInfo[0], 'title') && !empty($item->titleInfo[0]->title)) {
+                
+                $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
+                    
+                if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
+                    $title = ($item->titleInfo[0]->nonSort) . $title;
+                }
+                
+                $static_doc['title'] =  $title;
+            }
         }
 
         if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
-            $static_doc['creator'] = $item->name->namePart;
+            //need to fix!
+            if(is_array($item->name->namePart)){
+                $static_doc['creator'] = $item->name->namePart;
+            }else{
+                $static_doc['creator'] = array($item->name->namePart);
+            }
         }
         
         //really ugly down here.  
@@ -66,7 +83,7 @@
             foreach($physical_attributes as $val){
                 intval($val);
                 if($val != 0){
-                    $pages = $val;
+                    $pages = intval($val);
                     $static_doc['measurement_page_numeric'] = $pages;
                     break;
                 }
@@ -88,14 +105,18 @@
         }
         
         //set shelfrank to 0 for now
-        $static_doc['shelfrank'] = 0;
+        $static_doc['shelfrank'] = 15;
              
         if (property_exists($item->originInfo, 'dateIssued') && !empty($item->originInfo->dateIssued[1]) && intval($item->originInfo->dateIssued[1]) != 0) {
             $static_doc['pub_date'] = intval($item->originInfo->dateIssued[1]);
         }
 
         if (property_exists($item, 'typeOfResource') && !empty($item->typeOfResource)) {
-            $static_doc['format'] = $item->typeOfResource;
+            $type = $item->typeOfResource;
+            if($type == "text"){
+                $type="Book";
+            }
+            $static_doc['format'] = $type;
         }
         
         $title_nf = $item->titleInfo->title;
@@ -104,6 +125,8 @@
         $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
         //Clean up multiple dashes or whitespaces
         $title_link_friendly = preg_replace("/[\s-]+/", " ", $title_link_friendly);
+        //Remove spaces from end of line.
+        $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
         //Convert whitespaces and underscore to dash
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
         
@@ -121,7 +144,7 @@
 
     // Let's make sure we have at least 10 items and then we'll write them out to a static JSON file
     if ($complete_object['num_found'] > 10) {
-        $file_path = './owhl-web-app/data.json';
+        $file_path = '../web/js/awesome.json';
         // Write the contents back to the file
         file_put_contents($file_path, $serialized_object);
     }
