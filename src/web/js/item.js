@@ -15,21 +15,27 @@ $(document).ready(function() {
   		data: {query : uid, search_type : 'id', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-  			if(data.docs[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
-  				loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
-  			uniform_count = data.docs[0].ut_count;
-  			uniform_id = data.docs[0].ut_id;
-  			if (data.docs[0].lcsh != undefined) {
-				$.each(data.docs[0].lcsh, function(i, item) {
-					//item = item.replace(/\.\s*$/, '');
-					if(anchor_subject === '') {
-  						anchor_subject = item;
-  					}
-				});
-			}
-			var this_details = data.docs[0];
+            
+           //$item->classification[0] will always be lcc
+  			//if(data.mods[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
+  			//	loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
+  			uniform_count = data.mods.ut_count;
+  			uniform_id = data.mods.ut_id;
+            console.log(data.mods);
+            if(data.mods.subject instanceof Array) {
+                for(item in data.mods.subject){
+                    if(anchor_subject === '') {
+                        anchor_subject = item.topic;
+                    }
+                }
+            }else if(data.mods.subject instanceof Object){
+                if(anchor_subject === '') {
+                    anchor_subject = data.mods.subject.topic;
+                }
+            }
+			var this_details = data.mods;
 			if ( History.enabled ) {
-			  History.replaceState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.id);
+			  //History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.id);
 			}
 			else {
 			  draw_item_panel(this_details);
@@ -49,10 +55,10 @@ $(document).ready(function() {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: $('#uniform').text()});
 		$('#uniform').addClass('selected-button');
 	}
-	else if (loc_call_num_sort_order) {
+	/**else if (loc_call_num_sort_order) {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
 		$('#callview').addClass('selected-button');
-	}
+	}**/
 	else if(anchor_subject !== '') {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'lcsh', query: anchor_subject, ribbon: anchor_subject});
 		$('.subject-button:first').addClass('selected-button');

@@ -67,8 +67,10 @@
 
         if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
             //need to fix!
-            if(is_array($item->name->namePart)){
-                $static_doc['creator'] = $item->name->namePart;
+            if(is_array($item->name)){
+                foreach (%item->name as $name){
+                    $static_doc['creator'] = $name->namePart;
+                }
             }else{
                 $static_doc['creator'] = array($item->name->namePart);
             }

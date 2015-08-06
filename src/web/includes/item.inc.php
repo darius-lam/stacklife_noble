@@ -4,7 +4,7 @@ ini_set("display_errors", 1);
 error_reporting(E_ALL ^ E_NOTICE);
 
 // Start our session
-session_start();
+//session_start();
 $session_id = session_id();
 
 if(isset($_SESSION['views'])) {

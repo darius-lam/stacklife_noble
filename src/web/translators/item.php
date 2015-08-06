@@ -2,20 +2,22 @@
     error_reporting(E_ALL ^ E_NOTICE);
 
   require_once ('../../../etc/sl_ini.php');
-
+  //gets the id "string" of the book.
   $q = $_GET['query'];
-  $q = urlencode($q);
+  //$q = urlencode($q);
+  //$test_query = preg_replace("(/)", "+",$q);
   $offset = $_GET['start'];
   $limit = $_GET['limit']; 
   $search_type = $_GET['search_type'];
 
-  global $LIBRARYCLOUD_URL;
+  global $NOBLE_URL;
 
-  $url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset";
+  //$url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+  $url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=1";
 
   // Get facets and filters
   // TODO: This is ugly. Clean this stuff up.
-  $incoming = $_SERVER['QUERY_STRING'];
+  /** $incoming = $_SERVER['QUERY_STRING'];
   $facet_list = array();
   foreach (explode('&', $incoming) as $pair) {
       list($key, $value) = explode('=', $pair);
@@ -32,11 +34,14 @@
             $url = $url . "&filter=" . $value;
       }
     }
-    
+   **/    
 
   $contents = fetch_page($url);
-    
-  echo $contents;
+  //data from noble catalog is in xml, so we parse it into JSON
+  $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
+  $json = json_encode($xml); 
+
+  echo $json;
 
 function fetch_page($url) {
 
