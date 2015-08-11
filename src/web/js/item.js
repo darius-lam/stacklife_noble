@@ -19,6 +19,9 @@ $(document).ready(function() {
            //$item->classification[0] will always be lcc
   			//if(data.mods[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
   			//	loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
+            
+            loc_call_num_sort_order = 10;
+            
   			uniform_count = data.mods.ut_count;
   			uniform_id = data.mods.ut_id;
             console.log(data.mods);

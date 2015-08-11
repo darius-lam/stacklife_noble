@@ -2,7 +2,7 @@
     error_reporting(E_ALL ^ E_NOTICE);
 
   require_once ('../../../etc/sl_ini.php');
-  //gets the id "string" of the book.
+  //Queries come from ajax calls in item.js
   $q = $_GET['query'];
   //$q = urlencode($q);
   //$test_query = preg_replace("(/)", "+",$q);

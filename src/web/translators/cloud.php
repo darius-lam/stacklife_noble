@@ -42,14 +42,17 @@
   $json = array();
 
   $contents = fetch_page($url);
-    
-  $book_data = json_decode($contents, true);
+
+  $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
+  $j = json_encode($xml); 
+
+  $book_data = json_decode($j, true);
 
   $hits = $book_data['totalResults'];
   
-  $items = $book_data->mods;
+  $items = $book_data['mods'];
  
-  $facets = $book_data["facets"];
+  //$facets = $book_data["facets"];
     
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
     
@@ -57,11 +60,11 @@
     $title = '';
     $author = '';
     
-    $id = $item->recordInfo->recordIdentifier;
+    $id = $item['recordInfo']['recordIdentifier'];
   
     //$title_link_friendly = $item['title_link_friendly'];
     //$shelfrank = (int) $item['shelfrank'];
-    $title_nf = $item->titleInfo->title;
+    $title_nf = $item['titleInfo']['title'];
     $title_link_friendly = strtolower($title_nf);
     //Make alphanumeric (removes all other characters)
     $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
@@ -75,61 +78,43 @@
     $shelfrank = 35;
       
       
-    if(is_array($item->name)){
-        foreach ($item->name as $name){
-            $creator = $name->namePart;
+    if(is_array($item['name'])){
+        foreach ($item['name'] as $name){
+            $creator = $name['namePart'];
         }
     }else{
-        $creator = array($item->name->namePart);
+        $creator = array($item['name']['namePart']);
     }
       
-    if (property_exists($item->titleInfo, 'title') && !empty($item->titleInfo->title)) {
-        $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
+    if (!empty($item['titleInfo']['title'])) {
+        $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item['titleInfo']['title']);
 
-    }else{
-        if (property_exists($item->titleInfo[0], 'title') && !empty($item->titleInfo[0]->title)) {
+    }else if (!empty($item['titleInfo'][0]['title'])){
+        $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item['titleInfo'][0]['title']);
 
-            $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
-
-            if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
-                $title = ($item->titleInfo[0]->nonSort) . $title;
-            }
+        if(property_exists($item['titleInfo'][0], 'nonSort') && !empty($item['titleInfo'][0]['nonSort'])){
+            $title = ($item['titleInfo'][0]['nonSort']) . $title;
         }
     }
       
-    //really ugly down here.  
-    if (property_exists($item->physicalDescription, 'extent') && !empty($item->physicalDescription->extent)) {
-        $physical_attributes = explode(' ',preg_replace('/[^0-9]/',' ',$item->physicalDescription->extent));
-        $height = NULL;
-        $pages = NULL;
-
-        foreach($physical_attributes as $val){
-            intval($val);
-            if($val != 0){
-                $pages = intval($val);
-                $static_doc['measurement_page_numeric'] = $pages;
-                break;
-            }
+    if (!empty($item['physicalDescription']['extent'])) {
+        
+        if( preg_match('/([1-9]*\s*)(?=cm)/',$item['physicalDescription']['extent'],$height) ){
+            $height_cm = $height[0];
         }
-
-        foreach(array_reverse($physical_attributes) as $val){
-            $val = intval($val);
-            if($val!= 0){
-                $height = $val;
-
-                $static_doc['measurement_height_numeric'] = $height;
-                break;
-            }
+        if( preg_match('/([1-9]*\s*)(?=p)/',$item['physicalDescription']['extent'],$p)) {
+            $pages = $p[0];
         }
+        
     }
       
     if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
     if(!$pages) $pages = 200;
       
     
-    $year = intval($item->originInfo->dateIssued[1]);
+    $year = intval($item['originInfo']['dateIssued'][1]);
    
-    $format = $item->typeOfResource;
+    $format = $item['typeOfResource'];
     //need to fix
     if($format == "text"){
         $format = "Book";
@@ -151,6 +136,7 @@
   $last = $offset + 10;
     
     header('Content-type: application/json');
+
   if(count($json) == 0 || $offset == -1) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}'; 
   }
