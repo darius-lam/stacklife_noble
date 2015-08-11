@@ -63,7 +63,7 @@ $(document).ready(function() {
 		$('#callview').addClass('selected-button');
 	}**/
 	else if(anchor_subject !== '') {
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'lcsh', query: anchor_subject, ribbon: anchor_subject});
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: anchor_subject, ribbon: anchor_subject});
 		$('.subject-button:first').addClass('selected-button');
 	}
 	else if(anchor_subject === '') {
@@ -305,7 +305,7 @@ $(document).ready(function() {
 	$('.subject-button').live('click',function() {
 		$('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'lcsh', query: $(this).text(), ribbon: $(this).text()});
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: $(this).text(), ribbon: $(this).text()});
 	});
 
 	$('.wp_category-button').live('click',function() {

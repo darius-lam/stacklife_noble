@@ -14,8 +14,8 @@
   global $LIBRARYCLOUD_URL;
 
   //$url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset&sort=$sort";
-  //$url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
-   $url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=20";
+  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+   //$url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=20";
 
 
   // Get facets and filters
