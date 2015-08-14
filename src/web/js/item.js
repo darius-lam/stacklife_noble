@@ -37,8 +37,14 @@ $(document).ready(function() {
                 }
             }
 			var this_details = data.mods;
+            
+            this_details.title_link_friendly = this_details.titleInfo.title.toLowerCase.replace(/[^a-z0-9_\s-]/g,"");
+            this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
+            this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
+            this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
+            
 			if ( History.enabled ) {
-			  //History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.id);
+			  History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.identifier[0]);
 			}
 			else {
 			  draw_item_panel(this_details);
@@ -108,8 +114,8 @@ $(document).ready(function() {
 
 		// set our global var
 		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
-		title = item_details.title;
-		uid = item_details.id;
+		title = item_details.titleInfo.title;
+		uid = item_details.recordInfo.recordIdentifier;
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -119,7 +125,7 @@ $(document).ready(function() {
       $.ajax({
         type: "POST",
         url: slurl,
-        data: "also="+ item + "&id=" + item_details.id + "&function=set_also_viewed",
+        data: "also="+ item + "&id=" + item_details.identifier[0] + "&function=set_also_viewed",
         success: function(){
         }
       });
@@ -130,7 +136,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "POST",
 			url: slurl,
-			data: "function=session_info&type=set&uid=" + item_details.id,
+			data: "function=session_info&type=set&uid=" + item_details.identifier[0],
 			async: false
 		});
 		recentlyviewed += '&recently[]=' + uid;
@@ -139,14 +145,14 @@ $(document).ready(function() {
 		item_details.creators = '';
 		if(item_details.creator && item_details.creator.length > 0) {
 			var creator_markup_list = [];
-			$.each(item_details.creator, function(i, item){
+			$.each(item_details.name.namePart, function(i, item){
 				creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
 			});
 
-			item_details.creators = creator_markup_list.join('<span class="divider"> | </span>');
+			item_details.name.namePart = creator_markup_list.join('<span class="divider"> | </span>');
 		}
 
-        if(item_details.source_record.rsrc_key && item_details.source_record.rsrc_key.length > 0){
+       /** if(item_details.source_record.rsrc_key && item_details.source_record.rsrc_key.length > 0){
             var isArray = Array.isArray || function(obj) {
                 return Object.prototype.call(obj) == '[object Array]';
             };
@@ -162,7 +168,7 @@ $(document).ready(function() {
                     if(item == 'npr_org_broadcast')
                         item_details.npr_url = item_details.source_record.rsrc_value[i];
 			});
-		}
+		}**/
 
 		item_details.shelfrank = left_pad(item_details.shelfrank);
 
@@ -176,7 +182,7 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
 		var isbn = '';
-		if (item_details.id_isbn && item_details.id_isbn[0] && item_details.id_isbn[0].split(' ')[0]) {
+		if (item_details.identifier[0] && item_details.identifier[0] && item_details.identifier[0].split(' ')[0]) {
 			isbn = item_details.id_isbn[0].split(' ')[0];
 		}
 

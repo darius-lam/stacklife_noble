@@ -68,7 +68,7 @@
         if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
             //need to fix!
             if(is_array($item->name)){
-                foreach (%item->name as $name){
+                foreach ($item->name as $name){
                     $static_doc['creator'] = $name->namePart;
                 }
             }else{
@@ -132,7 +132,8 @@
         //Convert whitespaces and underscore to dash
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
         
-        $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
+        if($item->identifier['@attributes']
+        $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->identifier[0];
 
         $static_docs[] = $static_doc;
     }
