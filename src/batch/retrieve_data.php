@@ -132,8 +132,7 @@
         //Convert whitespaces and underscore to dash
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
         
-        if($item->identifier['@attributes']
-        $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->identifier[0];
+        $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
 
         $static_docs[] = $static_doc;
     }
