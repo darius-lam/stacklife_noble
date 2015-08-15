@@ -69,10 +69,14 @@
             //need to fix!
             if(is_array($item->name)){
                 foreach ($item->name as $name){
-                    $static_doc['creator'] = $name->namePart;
+                    array_push($static_doc['creator'],$name->namePart);
                 }
             }else{
-                $static_doc['creator'] = array($item->name->namePart);
+                if(is_array($item->name->namePart)){
+                     $static_doc['creator'] = array($item->name->namePart[0]);
+                }else{
+                    $static_doc['creator'] = array($item->name->namePart);
+                }
             }
         }
         
@@ -121,7 +125,12 @@
             $static_doc['format'] = $type;
         }
         
-        $title_nf = $item->titleInfo->title;
+        if(is_array($item->titleInfo)){
+            $title_nf = $item->titleInfo[0]->title;
+        }else{
+            $title_nf = $item->titleInfo->title;
+        }
+        
         $title_link_friendly = strtolower($title_nf);
         //Make alphanumeric (removes all other characters)
         $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);

@@ -60,10 +60,9 @@
     $title = '';
     $author = '';
     
+    //CHANGE TO ISBN
     $id = $item['recordInfo']['recordIdentifier'];
   
-    //$title_link_friendly = $item['title_link_friendly'];
-    //$shelfrank = (int) $item['shelfrank'];
     $title_nf = $item['titleInfo']['title'];
     $title_link_friendly = strtolower($title_nf);
     //Make alphanumeric (removes all other characters)

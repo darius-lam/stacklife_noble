@@ -15,7 +15,7 @@ $(document).ready(function() {
   		data: {query : uid, search_type : 'id', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-            
+            console.log(uid);
            //$item->classification[0] will always be lcc
   			//if(data.mods[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
   			//	loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
@@ -31,20 +31,22 @@ $(document).ready(function() {
                         anchor_subject = item.topic;
                     }
                 }
+                anchor_subject = data.mods.subject[0].topic;
             }else if(data.mods.subject instanceof Object){
                 if(anchor_subject === '') {
                     anchor_subject = data.mods.subject.topic;
                 }
             }
+            
 			var this_details = data.mods;
             
-            this_details.title_link_friendly = this_details.titleInfo.title.toLowerCase.replace(/[^a-z0-9_\s-]/g,"");
+            this_details.title_link_friendly = this_details.titleInfo.title.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
             
 			if ( History.enabled ) {
-			  History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.identifier[0]);
+			  //History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.identifier[0]);
 			}
 			else {
 			  draw_item_panel(this_details);
