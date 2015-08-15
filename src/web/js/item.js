@@ -15,22 +15,15 @@ $(document).ready(function() {
   		data: {query : uid, search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
+            //UID is ISBN
             console.log(uid);
-           //$item->classification[0] will always be lcc
-  			//if(data.mods[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
-  			//	loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
             
             loc_call_num_sort_order = 10;
             
   			uniform_count = data.mods.ut_count;
   			uniform_id = data.mods.ut_id;
-            console.log(data.mods);
+            
             if(data.mods.subject instanceof Array) {
-                /**for(item in data.mods.subject){
-                    if(anchor_subject === '') {
-                        anchor_subject = item.topic;
-                    }
-                }**/
                 anchor_subject = data.mods.subject[0].topic;
             }else if(data.mods.subject instanceof Object){
                 if(anchor_subject === '') {
@@ -51,8 +44,19 @@ $(document).ready(function() {
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
             
+            if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
+                link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
+            }else{
+                //may run into errors with this regex.
+                isbn = this_details.identifier[0].replace(/\s.*/,"");
+                link = "../" + this_details.title_link_friendly + "/" + isbn;
+                this_details.id_isbn = isbn;
+            }
+            console.log(link);
+            console.log(this_details);
+            
 			if ( History.enabled ) {
-			  //History.replaceState({data:this_details}, this_details.titleInfo.title, "../" + this_details.title_link_friendly + "/" + this_details.identifier[0]);
+			  History.replaceState({data:this_details}, this_details.titleInfo.title, link);
 			}
 			else {
 			  draw_item_panel(this_details);
@@ -123,7 +127,11 @@ $(document).ready(function() {
 		// set our global var
 		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
 		title = item_details.titleInfo.title;
-		uid = item_details.recordInfo.recordIdentifier;
+        if(item_details.id_isbn != null){
+            uid = item_details.id_isbn;
+        }else{
+            uid = item_details.recordInfo.recordIdentifier;
+        }
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -133,31 +141,33 @@ $(document).ready(function() {
       $.ajax({
         type: "POST",
         url: slurl,
-        data: "also="+ item + "&id=" + item_details.identifier[0] + "&function=set_also_viewed",
+        data: "also="+ item + "&id=" + item_details.id_isbn + "&function=set_also_viewed",
         success: function(){
         }
       });
     });
-    alsoviewed.push(item_details.id);
+    alsoviewed.push(item_details.id_isbn);
 
 		// add to recently viewed
 		$.ajax({
 			type: "POST",
 			url: slurl,
-			data: "function=session_info&type=set&uid=" + item_details.identifier[0],
+			data: "function=session_info&type=set&uid=" + item_details.id_isbn,
 			async: false
 		});
 		recentlyviewed += '&recently[]=' + uid;
 
 		// replace creator list
 		item_details.creators = '';
-		if(item_details.creator && item_details.creator.length > 0) {
+		if(item_details.name) {
 			var creator_markup_list = [];
-			$.each(item_details.name.namePart, function(i, item){
-				creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
+			$.each(item_details.name, function(i, item){
+                if(typeof item == 'string'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
+                }
 			});
 
-			item_details.name.namePart = creator_markup_list.join('<span class="divider"> | </span>');
+			item_details.creators = creator_markup_list.join('<span class="divider"> | </span>');
 		}
 
        /** if(item_details.source_record.rsrc_key && item_details.source_record.rsrc_key.length > 0){
