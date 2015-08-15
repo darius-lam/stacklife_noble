@@ -125,8 +125,17 @@
     //still don't have sort order
     //$loc_sort_order = $item['loc_call_num_sort_order'];
     $loc_sort_order= 10;
-    $link = "$www_root/item/$title_link_friendly/$id";
+      
+
+    if(!empty($item['identifier'][0]['@attributes']['invalid']) && ($item['identifier'][0]['@attributes']['invalid'] == 'yes')){
+        $link = "/item/" . $title_link_friendly . '/' . $item['recordInfo']['recordIdentifier'];   
+    }else{
+        //may run into errors with this regex.
+        $isbn = preg_replace("/\s.*/","",$item['identifier'][0]);
+        $link = "/item/" . $title_link_friendly . '/' . $isbn;
+    }
     
+      
     $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $year, $title_link_friendly, $format, $loc_sort_order, $link);
     $temp_array  = array_combine($books_fields, $books_data);
     array_push($json, $temp_array);

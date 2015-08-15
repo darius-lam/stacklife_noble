@@ -12,7 +12,7 @@ $(document).ready(function() {
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : uid, search_type : 'id', start : '0', limit : '1'},
+  		data: {query : uid, search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
             console.log(uid);
@@ -26,21 +26,27 @@ $(document).ready(function() {
   			uniform_id = data.mods.ut_id;
             console.log(data.mods);
             if(data.mods.subject instanceof Array) {
-                for(item in data.mods.subject){
+                /**for(item in data.mods.subject){
                     if(anchor_subject === '') {
                         anchor_subject = item.topic;
                     }
-                }
+                }**/
                 anchor_subject = data.mods.subject[0].topic;
             }else if(data.mods.subject instanceof Object){
                 if(anchor_subject === '') {
                     anchor_subject = data.mods.subject.topic;
                 }
             }
-            
+            console.log(anchor_subject);
 			var this_details = data.mods;
             
-            this_details.title_link_friendly = this_details.titleInfo.title.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
+            if(this_details.titleInfo instanceof Array){
+                title_nf = this_details.titleInfo[0].title;
+            }else{
+                title_nf = this_details.titleInfo.title;
+            }
+            
+            this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");

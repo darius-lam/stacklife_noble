@@ -12,8 +12,8 @@
 
   global $NOBLE_URL;
 
-  //$url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
-  $url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=1";
+  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+  //$url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=1";
 
   // Get facets and filters
   // TODO: This is ugly. Clean this stuff up.

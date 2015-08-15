@@ -29,20 +29,9 @@
     $json = json_encode($xml);
     $noble_response = json_decode($json);
 
-    // For each Awesome item, let's get details from the LC API
     $static_docs = array();
     
     foreach ($noble_response->mods as $item) {
-                
-        /**$curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://librarycloud.harvard.edu/v1/api/item/?filter=id_inst:' . $doc->hollis_id
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        $lc_response = json_decode($response);**/
         
                 
         // Do we need to set default like this, or does StackView do that for us?
@@ -141,8 +130,13 @@
         //Convert whitespaces and underscore to dash
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
         
-        $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
-
+        if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
+            $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
+        }else{
+            //may run into errors with this regex.
+            $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
+            $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $isbn;
+        }
         $static_docs[] = $static_doc;
     }
     
