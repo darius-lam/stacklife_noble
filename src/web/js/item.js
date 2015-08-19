@@ -23,12 +23,22 @@ $(document).ready(function() {
   			uniform_count = data.mods.ut_count;
   			uniform_id = data.mods.ut_id;
             
+            var subject = [];
             if(data.mods.subject instanceof Array) {
                 anchor_subject = data.mods.subject[0].topic;
+                
+                data.mods.subject.forEach(function(item){
+                    subject.push(item.topic);
+                })
+                
+                if(anchor_subject instanceof Array){
+                    anchor_subject = anchor_subject[0];   
+                }
             }else if(data.mods.subject instanceof Object){
                 if(anchor_subject === '') {
                     anchor_subject = data.mods.subject.topic;
                 }
+                subject = data.mods.subject.topic;
             }
             console.log(anchor_subject);
 			var this_details = data.mods;
@@ -39,6 +49,23 @@ $(document).ready(function() {
                 title_nf = this_details.titleInfo.title;
             }
             
+            //Setting up some variables to make it easier for templating
+            this_details.lcsh = subject;
+            this_details.title = title_nf.replace(/\//g,"");
+            var place = this_details.originInfo.place;
+            if(place instanceof Array){
+                place.forEach(function(entry){
+                    if(entry.text){
+                        this_details.pub_location = entry.text;
+                    }
+                })
+            }else{
+                this_details.pub_location = place.text;
+            }
+            this_details.publisher = this_details.publisher;
+            this_details.pub_date = this_details.dateIssued;
+            
+            this_details.shelfrank = 30;
             this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
             this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
@@ -49,10 +76,12 @@ $(document).ready(function() {
             }else{
                 //may run into errors with this regex.
                 isbn = this_details.identifier[0].replace(/\s.*/,"");
-                link = "../" + this_details.title_link_friendly + "/" + isbn;
-                this_details.id_isbn = isbn;
+                if(isbn.length == 10 || isbn.length == 13){
+                  link = "../" + this_details.title_link_friendly + "/" + isbn;
+                  this_details.isbn = isbn;
+                  this_details.id_isbn = isbn;  
+                }
             }
-            console.log(link);
             console.log(this_details);
             
 			if ( History.enabled ) {
@@ -127,11 +156,8 @@ $(document).ready(function() {
 		// set our global var
 		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
 		title = item_details.titleInfo.title;
-        if(item_details.id_isbn != null){
-            uid = item_details.id_isbn;
-        }else{
-            uid = item_details.recordInfo.recordIdentifier;
-        }
+        uid = item_details.id_isbn;
+        
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -164,6 +190,8 @@ $(document).ready(function() {
 			$.each(item_details.name, function(i, item){
                 if(typeof item == 'string'){
                     creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
+                }else if(Object.prototype.toString.call(item) == '[object Array]'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item[0] + '">' + item[0] + '</a>');
                 }
 			});
 
@@ -189,7 +217,7 @@ $(document).ready(function() {
 		}**/
 
 		item_details.shelfrank = left_pad(item_details.shelfrank);
-
+        
 		// Translate a total score value to a class value (after removing the old class)
 		$('.shelfRank, .itemData-container, .unpack').removeClass(function (index, css) {
 		    return (css.match(/color\d+/g) || []).join(' ');
@@ -199,14 +227,14 @@ $(document).ready(function() {
 
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
-		var isbn = '';
-		if (item_details.identifier[0] && item_details.identifier[0] && item_details.identifier[0].split(' ')[0]) {
+		//var isbn = '';
+		/**if (item_details.identifier[0] && item_details.identifier[0] && item_details.identifier[0].split(' ')[0]) {
 			isbn = item_details.id_isbn[0].split(' ')[0];
-		}
+		}**/
 
-		item_details.isbn = isbn;
+		//item_details.isbn = isbn;
 
-		var oclc = '';
+		/**var oclc = '';
 		if (item_details.id_oclc) {
 			oclc = item_details.id_oclc;
 		}
@@ -219,7 +247,7 @@ $(document).ready(function() {
 		GBSArray = ['ISBN:' + isbn, 'OCLC:' + oclc];
 		$.getScript($("#gbscript").attr('src'));
 
-                /*
+                
 		if (item_details.lcsh != undefined) {
 			$.each(item_details.lcsh, function(i, item) {
 				item_details.lcsh[i] = item.replace(/\.\s*$/, '');
@@ -237,19 +265,20 @@ $(document).ready(function() {
 		var template = Handlebars.compile(source);
     $('#shelves-panel').html(template(item_details));
 
-    $.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
+    //NEED TO FIX THIS!!!
+        
+    /**$.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
       if(data) {
         var source = $("#availability-template").html();
         var template = Handlebars.compile(source);
         $('#availability-panel').html(template(data));
       }
-    });
+    });**/
 
     $("#toc").html('');
-    if('505a' in item_details.source_record) {
-        var sr = item_details.source_record;
-        var toc = String(sr['505a']);
-        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />');
+    if(item_details.tableOfContents) {
+        toc = item_details.tableOfContents;
+        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />').replace(/[\/]/g, '<br />').replace(/[\\]/g, '<br />');
         if(toc) {
             $("#toc").html('<p>' + toc + '</p>')
             $(".toc-title").show();
@@ -257,9 +286,11 @@ $(document).ready(function() {
     } else {
         $(".toc-title").hide();
     }
-
+        
+        //NEED TO ADD!!! 
+        
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
-		if (isbn) {
+		/**if (isbn) {
 			$.ajax({
 				type: "GET",
 				url: slurl,
@@ -275,11 +306,11 @@ $(document).ready(function() {
 		});
 		} else {
 			$('.buy').hide();
-		}
-
-		if(item_details.this_button) {
-      $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
-    }
+		}**/
+        
+    if(item_details.this_button) {
+        $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
+    }   
 
 	} //end draw item panel
 
@@ -290,7 +321,7 @@ $(document).ready(function() {
 		$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : this_details.id, search_type : 'id', start : '0', limit : '1'},
+  		data: {query : this_details.identifier[0], search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
 			  var this_details = data.docs[0];

@@ -131,13 +131,15 @@
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
         
         if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
-            $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
+            //we simply don't add items that have invalid ISBNs
+            
+            //$static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
         }else{
             //may run into errors with this regex.
             $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
             $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $isbn;
+            $static_docs[] = $static_doc;
         }
-        $static_docs[] = $static_doc;
     }
     
     $complete_object = array();

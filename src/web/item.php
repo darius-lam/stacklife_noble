@@ -128,6 +128,7 @@ $(document).ready(function() {
     </div>
     <img class="cover-image" src="http://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg" />
     <ul class="access">
+      <!-- Fix this down here -->
       <li><a href="http://id.lib.harvard.edu/aleph/{{id_inst}}/catalog" target="_blank">HOLLIS</a></li>
       {{#if url}}
       <li><a href="{{url}}">Online Access</a></li>
@@ -213,12 +214,12 @@ Your browser does not support the audio element.
 		 <br/>
     <span class="heading">Subject Stacks</span>
     <ul>
-      {{#if ut_count}}
-			<li id="uniform" class="button stack-button"><span class="reload">All editions</span></li>
-			{{/if}}
-			{{#lcsh}}
-			<li class="subject-button"><span class="reload">{{this}}</span></li>
-			{{/lcsh}}
+        {{#if ut_count}}
+            <li id="uniform" class="button stack-button"><span class="reload">All editions</span></li>
+        {{/if}}
+        {{#lcsh}}
+            <li class="subject-button"><span class="reload">{{this}}</span></li>
+        {{/lcsh}}
     </ul>
     <br/>
     <span class="heading">Community Stacks</span>
