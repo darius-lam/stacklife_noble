@@ -48,6 +48,7 @@ $(document).ready(function() {
             }else{
                 title_nf = this_details.titleInfo.title;
             }
+            this_details.title = title_nf;
             
             //Setting up some variables to make it easier for templating
             this_details.lcsh = subject;
@@ -155,7 +156,10 @@ $(document).ready(function() {
 
 		// set our global var
 		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
-		title = item_details.titleInfo.title;
+        
+        //make sure that the title is not an array
+        title = item_details.title
+		
         uid = item_details.id_isbn;
         
 
@@ -188,10 +192,16 @@ $(document).ready(function() {
 		if(item_details.name) {
 			var creator_markup_list = [];
 			$.each(item_details.name, function(i, item){
-                if(typeof item == 'string'){
-                    creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
+                if(typeof item.namePart == 'string'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item.namePart + '">' + item.namePart + '</a>');
+                }else if(Object.prototype.toString.call(item.namePart) == '[object Array]'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item.namePart[0] + '">' + item.namePart[0] + '</a>');
+                }else if(typeof item == 'string'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');  
                 }else if(Object.prototype.toString.call(item) == '[object Array]'){
-                    creator_markup_list.push('<a class="creator" href="../../author/' + item[0] + '">' + item[0] + '</a>');
+                    if(typeof item[0] == 'string'){
+                       creator_markup_list.push('<a class="creator" href="../../author/' + item[0] + '">' + item[0] + '</a>');  
+                   }
                 }
 			});
 
@@ -227,32 +237,44 @@ $(document).ready(function() {
 
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
-		//var isbn = '';
-		/**if (item_details.identifier[0] && item_details.identifier[0] && item_details.identifier[0].split(' ')[0]) {
-			isbn = item_details.id_isbn[0].split(' ')[0];
-		}**/
-
-		//item_details.isbn = isbn;
+        
+		var isbn = '';
+		isbn = item_details.id_isbn;
 
 		/**var oclc = '';
 		if (item_details.id_oclc) {
 			oclc = item_details.id_oclc;
 		}
 
-		item_details.oclc = oclc;
+		item_details.oclc = oclc;**/
 
-		var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:' + oclc + ',ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
+		//var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:' + oclc + ',ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
+        
+        var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
 		$("#gbscript").attr('src', gbsrc);
-
-		GBSArray = ['ISBN:' + isbn, 'OCLC:' + oclc];
+        
+		//GBSArray = ['ISBN:' + isbn, 'OCLC:' + oclc];
+        GBSArray = ['ISBN:' + isbn];
 		$.getScript($("#gbscript").attr('src'));
 
                 
-		if (item_details.lcsh != undefined) {
+		if (item_details.lcsh != undefined && item_details.lcsh instanceof Array) {
+            a = 0;
+            extra_add = [];
 			$.each(item_details.lcsh, function(i, item) {
-				item_details.lcsh[i] = item.replace(/\.\s*$/, '');
+                if(item instanceof Array){
+                    $.each(item, function(b,it){
+                        //item_details.lcsh[a] = it.replace(/\.\s*$/, '');
+                        extra_add.push(it.replace(/\.\s*$/, ''));
+                    });
+                }else{
+                    item_details.lcsh[a] = item.replace(/\.\s*$/, '');
+                    a = a + 1;
+                }
 			});
-		}*/
+            item_details.lcsh = item_details.lcsh.concat(extra_add);
+            item_details.lcsh = eliminateDuplicatesStrings(item_details.lcsh);
+		}
 
 		// Redraw our tags
 		drawTagNeighborhood();
@@ -290,7 +312,7 @@ $(document).ready(function() {
         //NEED TO ADD!!! 
         
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
-		/**if (isbn) {
+		if (isbn) {
 			$.ajax({
 				type: "GET",
 				url: slurl,
@@ -306,7 +328,7 @@ $(document).ready(function() {
 		});
 		} else {
 			$('.buy').hide();
-		}**/
+		}
         
     if(item_details.this_button) {
         $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
@@ -321,10 +343,11 @@ $(document).ready(function() {
 		$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : this_details.identifier[0], search_type : 'isbn', start : '0', limit : '1'},
+  		data: {query : this_details.identifier[0].replace(/\s.*/,""), search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
 			  var this_details = data.docs[0];
+              console.log("Got Here");
 			  data.docs[0].this_button = this_button;
 			  if(History.enabled) {
 			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.id);
@@ -430,7 +453,9 @@ function drawTagNeighborhood(){
 function ProcessGBSBookInfo(booksInfo) {
 	$('.button-google').hide();
 	$('.button-google-disabled').show();
+    console.log(booksInfo);
 	for (isbn in booksInfo) {
+        
 		var GBSParts = isbn.split(':');
 		var bookInfo = booksInfo[isbn];
 		if (bookInfo) {
@@ -489,4 +514,19 @@ function left_pad(value) {
 		return '0' + value;
 	}
 	return value;
+}
+
+function eliminateDuplicatesStrings(arr) {
+  var i,
+      len=arr.length,
+      out=[],
+      obj={};
+  
+  for (i=0;i<len;i++) {
+    obj[arr[i]]=0;
+  }
+  for (i in obj) {
+    out.push(i);
+  }
+  return out;
 }

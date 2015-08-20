@@ -62,17 +62,6 @@
     
     //CHANGE TO ISBN
     $id = $item['recordInfo']['recordIdentifier'];
-  
-    $title_nf = $item['titleInfo']['title'];
-    $title_link_friendly = strtolower($title_nf);
-    //Make alphanumeric (removes all other characters)
-    $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
-    //Clean up multiple dashes or whitespaces
-    $title_link_friendly = preg_replace("/[\s-]+/", " ", $title_link_friendly);
-    //Remove spaces from end of line.
-    $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
-    //Convert whitespaces and underscore to dash
-    $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
       
     $shelfrank = 35;
       
@@ -95,6 +84,17 @@
             $title = ($item['titleInfo'][0]['nonSort']) . $title;
         }
     }
+    
+    $title_nf = $title;
+    $title_link_friendly = strtolower($title_nf);
+    //Make alphanumeric (removes all other characters)
+    $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
+    //Clean up multiple dashes or whitespaces
+    $title_link_friendly = preg_replace("/[\s-]+/", " ", $title_link_friendly);
+    //Remove spaces from end of line.
+    $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
+    //Convert whitespaces and underscore to dash
+    $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
       
     if (!empty($item['physicalDescription']['extent'])) {
         

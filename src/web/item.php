@@ -39,7 +39,7 @@ var www_root = '<?php echo $www_root ?>';
 var recentlyviewed = '';
 var alsoviewed = new Array();
 
-var GBSArray = ['ISBN:<?php echo $isbn_trim ?>', 'OCLC:<?php echo $oclcnum ?>'];
+var GBSArray = ['ISBN:<?php echo $isbn_trim ?>', 'OCLC: 0'];
 
 google.load("books", "0");
 
@@ -115,7 +115,9 @@ $(document).ready(function() {
 	<!-- //////////begin templates//////////////////// -->
 
 
-  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:<?php echo $oclcnum ?>,ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>
+  <!--<script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:<?php echo $oclcnum ?>,ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>-->
+  
+  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:0738531367&callback=ProcessGBSBookInfo"></script>
   </div> <!--end wrapper-->
 
   <script id="item-template" type="text/x-handlebars-template">
