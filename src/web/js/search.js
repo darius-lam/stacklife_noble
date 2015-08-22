@@ -157,12 +157,11 @@ var config = (function () {
 	// we can send to LibraryCloud
 	my.get_query_string = function() {
 		var composite_query = my.search_type + ':' + my.query;
-		
-		var std_params = ['search_type=*', 'query=*',
+		var std_params = ['search_type=' + my.search_type, 'query=' + encodeURI(my.query),
 		                  'start=' + my.start, 'limit=' + my.limit, 
-		                  'sort=' + my.sort_field + ' ' + my.sort_direction];
+		                  'sort=' + my.sort_field];
 				
-		$.each(my.facets, function(i, item) {
+		/**$.each(my.facets, function(i, item) {
 			std_params.push('facet=' + item);
 		});
 		
@@ -172,7 +171,7 @@ var config = (function () {
 		
 		$.each(my.search_filters, function(i, item) {
 			std_params.push('filter=' + my.search_type + ':'+ item);
-		});
+		});**/
 
 		return std_params.join('&');
 	}
@@ -237,14 +236,15 @@ var library_cloud = (function () {
     var my = {};
     // Holds the JSON we get back from LibraryCloud
     my.lc_results;
-
+    console.log(config);
     // The AJAX call to get the results from LibraryCloud
 	my.get_results = function() {
 		$.ajax({
 		      // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
-			  url: config.lc_url + '?filter=collection:hollis_catalog&' + config.get_query_string(),
+			  url: config.lc_url + '?' + config.get_query_string(),
+              //url: config.lc_url +  config.get_query_string(),
 			  async: false,
-                          dataType: "JSON",
+              dataType: "JSON",
 			  cache: false,
 			  success:
 				function (results) {

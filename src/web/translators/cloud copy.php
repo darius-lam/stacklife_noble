@@ -44,43 +44,42 @@
   $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
   $j = json_encode($xml); 
 
-  $book_data = json_decode($j);
+  $book_data = json_decode($j, true);
 
+  $hits = $book_data['totalResults'];
   
-  $hits = $book_data->totalResults;
-  
-  $items = $book_data->mods;
+  $items = $book_data['mods'];
+ 
+  //$facets = $book_data["facets"];
     
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
     
   foreach($items as $item) {
     $title = '';
     $author = '';
+    
+    //CHANGE TO ISBN
+    $id = $item['recordInfo']['recordIdentifier'];
       
     $shelfrank = 35;
       
-
-    if(is_array($item->name)){
-        foreach ($item->name as $name){
-            array_push($creator,$name->namePart);
+      
+    if(is_array($item['name'])){
+        foreach ($item['name'] as $name){
+            $creator = $name['namePart'];
         }
     }else{
-        if(is_array($item->name->namePart)){
-             $creator = array($item->name->namePart[0]);
-        }else{
-            $creator = array($item->name->namePart);
-        }
+        $creator = array($item['name']['namePart']);
     }
       
-      
-    if (!empty($item->titleInfo->title)) {
-        $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
+    if (!empty($item['titleInfo']['title'])) {
+        $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item['titleInfo']['title']);
 
-    }else if (!empty($item->titleInfo[0]->title)){
-        $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
+    }else if (!empty($item['titleInfo'][0]['title'])){
+        $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item['titleInfo'][0]['title']);
 
-        if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
-            $title = ($item->titleInfo[0]->nonSort) . $title;
+        if(property_exists($item['titleInfo'][0], 'nonSort') && !empty($item['titleInfo'][0]['nonSort'])){
+            $title = ($item['titleInfo'][0]['nonSort']) . $title;
         }
     }
     
@@ -95,12 +94,12 @@
     //Convert whitespaces and underscore to dash
     $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
       
-    if (!empty($item->physicalDescription->extent)) {
+    if (!empty($item['physicalDescription']['extent'])) {
         
-        if( preg_match('/([1-9]*\s*)(?=cm)/',$item->physicalDescription->extent,$height) ){
+        if( preg_match('/([1-9]*\s*)(?=cm)/',$item['physicalDescription']['extent'],$height) ){
             $height_cm = $height[0];
         }
-        if( preg_match('/([1-9]*\s*)(?=p)/',$item->physicalDescription->extent,$p)) {
+        if( preg_match('/([1-9]*\s*)(?=p)/',$item['physicalDescription']['extent'],$p)) {
             $pages = $p[0];
         }
         
@@ -110,9 +109,9 @@
     if(!$pages) $pages = 200;
       
     
-    $year = intval($item->originInfo->dateIssued[1]);
+    $year = intval($item['originInfo']['dateIssued'][1]);
    
-    $format = $item->typeOfResource;
+    $format = $item['typeOfResource'];
     //need to fix
     if($format == "text"){
         $format = "Book";
@@ -122,19 +121,17 @@
     //$format = str_replace(" ", "", $format);
     
     //still don't have sort order
-    //$loc_sort_order = $item->loc_call_num_sort_order'];
+    //$loc_sort_order = $item['loc_call_num_sort_order'];
     $loc_sort_order= 10;
       
     $push = true;
-    if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
-        $link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
+    if(!empty($item['identifier'][0]['@attributes']['invalid']) && ($item['identifier'][0]['@attributes']['invalid'] == 'yes')){
+        $link = "/item/" . $title_link_friendly . '/' . $item['recordInfo']['recordIdentifier'];   
         $push = false;
-        $id = 000;
         $hits = $hits - 1;
     }else{
         //may run into errors with this regex.
-        $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-        $id = $isbn;
+        $isbn = preg_replace("/\s.*/","",$item['identifier'][0]);
         $link = "/item/" . $title_link_friendly . '/' . $isbn;
     }
     
