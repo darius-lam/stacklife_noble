@@ -1,5 +1,5 @@
 <?php
-    require_once(__DIR__ . '/../../etc/sl_ini.php');
+    require_once(dirname(__FILE__) . '/../../etc/sl_ini.php');
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
