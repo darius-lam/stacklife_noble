@@ -1,5 +1,4 @@
 .htaccess
 etc/build/build.xml
-src/web/js/awesome.json
 .env
 vendor/
