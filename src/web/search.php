@@ -2,7 +2,7 @@
   ini_set("display_errors", 1); 
   error_reporting(E_ALL ^ E_NOTICE);
 
-  require_once ('../../etc/sl_ini.php');
+  require_once (__DIR__ .  '/../../etc/sl_ini.php');
   
   $page = 'search';
 ?>

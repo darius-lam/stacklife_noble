@@ -1,7 +1,7 @@
 <?php
     error_reporting(E_ALL ^ E_NOTICE);
 
-  require_once ('../../../etc/sl_ini.php');
+  require_once (__DIR__ .  '/../../../etc/sl_ini.php');
   //Queries come from ajax calls in item.js
   $q = $_GET['query'];
   //$q = urlencode($q);

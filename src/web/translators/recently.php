@@ -1,6 +1,6 @@
 <?php
     
-  require_once('../../../etc/sl_ini.php');
+  require_once(__DIR__ .  '/../../../etc/sl_ini.php');
     
   $user_books = array_unique($_GET['recently']);
 	$limit = $_GET['limit'];

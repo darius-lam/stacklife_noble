@@ -151,7 +151,7 @@
 
     // Let's make sure we have at least 10 items and then we'll write them out to a static JSON file
     if ($complete_object['num_found'] > 10) {
-        $file_path = '../web/js/awesome.json';
+        $file_path = __DIR__ . '/../web/js/awesome.json';
         // Write the contents back to the file
         file_put_contents($file_path, $serialized_object);
     }
