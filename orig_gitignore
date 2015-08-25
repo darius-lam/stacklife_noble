@@ -1,5 +1,0 @@
-etc/build/build.xml
-.env
-vendor/
-etc/sl_ini.php
-.htaccess
