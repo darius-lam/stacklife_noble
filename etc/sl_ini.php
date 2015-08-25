@@ -4,7 +4,8 @@
 
 // The web root. The path that can be used when linking (to js, css, ...)
 // This should probably be something like http://localhost/
-$www_root = "http://localhost";
+//$www_root = "http://localhost/";
+$www_root = "http://warm-taiga-3444.herokuapp.com/";
 
 // Build version
 $version = "alpha 2.3";
