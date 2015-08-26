@@ -410,7 +410,7 @@ $(document).ready(function() {
 			bookTags: "tag?"
 		},
 		submitHandler: function(form) {
-			var tags     = encodeURIComponent($('#bookTags').attr('value'));
+			var tags = encodeURIComponent($('#bookTags').attr('value'));
 			$.ajax({
 				type: "POST",
 				url: slurl,
@@ -441,6 +441,7 @@ function drawTagNeighborhood(){
 		if(data.tags.length > 0) {
 			$.each(data.tags, function(i, val) {
 				var percentage = val.freq/val.biggest * 100;
+                
 				percentage = Math.round(percentage) + '%';
 				tagList += '<li class="tag-button button"><span class="reload">' + val.tag + '</span> (' + val.freq + ')</li>';
 			});

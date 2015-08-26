@@ -45,11 +45,17 @@ function fetch_availability()
 	echo $contents;
 }
 
+//
+//
+// FIX MYSQL PLAIN QUERY
+//  |  |
+//  V  V
+
 function fetch_tag_cloud()
 {	
 	connect_db();
 	
-	$uid        = trim($_REQUEST['uid']);	
+	$uid = trim($_REQUEST['uid']);	
 	$biggest = 0;
 
 	//query the database
@@ -65,9 +71,11 @@ function fetch_tag_cloud()
   for ($x = 0; $x < mysql_num_rows($query); $x++) {
     
     $row = mysql_fetch_assoc($query);
+    $query_new = "SELECT COUNT(" . "'".$row['tag']."'" . ") FROM sl_tags WHERE tag = " . "'".$row['tag']."'";
+    $freq = mysql_fetch_array(mysql_query($query_new));  
 	if($x == 0) $biggest = $row['COUNT(tag)'];	
 		//continue json object
-    $json .= "{tag:'" . $row["tag"] . "',freq:'" . $row["COUNT(tag)"] . "',biggest:'" . $biggest . "'}";
+    $json .= "{tag:'" . $row["tag"] . "',freq:'" . $freq[0] . "',biggest:'" . $biggest . "'}";
 		
 		//add comma if not last row, closing brackets if is
 		if ($x < mysql_num_rows($query) -1)
@@ -219,9 +227,10 @@ function set_book_tag()
 	connect_db();	
 
 	// TAG INFORMATION
-	$uid        = trim($_REQUEST['uid']);
+	$uid = trim($_REQUEST['uid']);
 
-	$tag_array = $_REQUEST['tags']; 
+	$tag_array = $_REQUEST['tags'];
+    
 	$tags = explode(',', $tag_array); 
 
   foreach($tags as $tag){
@@ -283,11 +292,12 @@ function connect_db() {
 	global $hostName;
 	global $userName;
 	global $pw;
-			
-	if(!($link=mysql_pconnect($hostName, $userName, $pw))) 
+    
+	if(!($link=mysql_pconnect($hostName,$userName,$pw))) 
 	{
 		echo "before error<br />";
-		echo "error connecting to host";
+		echo "error connecting to host<br/>";
+        echo mysql_error();
 		exit;
 	}
 	else
