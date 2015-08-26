@@ -1,26 +1,26 @@
 <?php
 
+//WARNING:  DO NOT PUT PASSWORDS HERE.  THIS FILE WILL BE COMITTED.
+
 // The web root. The path that can be used when linking (to js, css, ...)
 // This should probably be something like http://localhost/
-$www_root = "http://localhost/src/web/";
+//$www_root = "http://localhost/";
+$www_root = "http://localhost/";
 
 // Build version
 $version = "alpha 2.3";
 
 // DB connection details
-$hostName = "localhost";
-$userName = "youdbusername";
-$pw = "yourdbpassword";
+$hostName = "hostname";
+$userName = "username";
+$pw = "password";
 
 // Availability
 $AVAILABILITY_URL = "youravailurl";
 
 // LibraryCloud
 // Probably something like http://example.com/platform/v0.03/api/item/
-$LIBRARYCLOUD_URL = 'http://example.com/platform/v0.03/api/item/';
-
-// Probably someting like http://example.com/platform/v0.03/api/item/
-$LIBRARYCLOUD_KEY = 'yourlckey';
+$NOBLE_URL = 'http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods';
 
 $TYPEKIT_CODE = 'yourtypekitcode';
 
