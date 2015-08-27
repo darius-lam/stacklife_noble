@@ -2,11 +2,11 @@
 
 /****************************
  * This script hits the Awesome API to retrieve the n recently awesomed items.
- * We grab the hollis ID of each awesome item and use it to get details of the item from the 
+ * We grab the hollis ID of each awesome item and use it to get details of the item from the
  * LibraryCloud API. We package that up and serialize it ot a JSON object that is used display
  * a StackView stack on the homepage.
- 
- 
+
+
  To DO:
  Get shelfrank?
  ****************************/
@@ -24,57 +24,61 @@
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    
+
     $xml = simplexml_load_string($response, "SimpleXMLElement", LIBXML_NOCDATA);
     $json = json_encode($xml);
     $noble_response = json_decode($json);
 
     $static_docs = array();
-    
+
     foreach ($noble_response->mods as $item) {
-        
-                
+
+
         // Do we need to set default like this, or does StackView do that for us?
         $static_doc = array('title' => 'Unknown Title', 'creator' => array(), 'measurement_page_numeric' => 0, 'measurement_height_numeric' => 0, 'pub_date' => 0);
 
-        // The labels in LC and the Awesome API don't always match. Let's align those here.        
-        if (property_exists($item->titleInfo, 'title') && !empty($item->titleInfo->title)) {
+        // boy i love inconsistent data
+        // The labels in LC and the Awesome API don't always match. Let's align those here.
+        if (
+          !is_array($item->titleInfo)
+          && property_exists($item->titleInfo, 'title')
+          && !empty($item->titleInfo->title)
+        ) {
             $static_doc['title'] =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
-           
-        }else{
+        }
+        else {
             if (property_exists($item->titleInfo[0], 'title') && !empty($item->titleInfo[0]->title)) {
-                
+
                 $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
-                    
+
                 if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
                     $title = ($item->titleInfo[0]->nonSort) . $title;
                 }
-                
+
                 $static_doc['title'] =  $title;
             }
         }
 
-        if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
-            //need to fix!
-            if(is_array($item->name)){
-                foreach ($item->name as $name){
-                    array_push($static_doc['creator'],$name->namePart);
-                }
-            }else{
-                if(is_array($item->name->namePart)){
-                     $static_doc['creator'] = array($item->name->namePart[0]);
-                }else{
-                    $static_doc['creator'] = array($item->name->namePart);
-                }
-            }
+        if (is_array($item->name)) {
+          foreach($item->name as $name) {
+            // XXX - make sure that 'namePart' exists
+            array_push($static_doc['creator'], $name->namePart);
+          }
         }
-        
-        //really ugly down here.  
+        else if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
+          if(is_array($item->name->namePart)){
+            $static_doc['creator'] = array($item->name->namePart[0]);
+          }else{
+            $static_doc['creator'] = array($item->name->namePart);
+          }
+        }
+
+        //really ugly down here.
         if (property_exists($item->physicalDescription, 'extent') && !empty($item->physicalDescription->extent)) {
             $physical_attributes = explode(' ',preg_replace('/[^0-9]/',' ',$item->physicalDescription->extent));
             $height = NULL;
             $pages = NULL;
-            
+
             foreach($physical_attributes as $val){
                 intval($val);
                 if($val != 0){
@@ -83,12 +87,12 @@
                     break;
                 }
             }
-            
+
             foreach(array_reverse($physical_attributes) as $val){
                 $val = intval($val);
                 if($val!= 0){
                     $height = $val;
-                    
+
                     $static_doc['measurement_height_numeric'] = $height;
                     break;
                 }
@@ -98,10 +102,10 @@
         if (property_exists($item, 'shelfrank') && !empty($item->shelfrank)) {
             $static_doc['shelfrank'] = $item->shelfrank;
         }
-        
+
         //set shelfrank to 0 for now
         $static_doc['shelfrank'] = 15;
-             
+
         if (property_exists($item->originInfo, 'dateIssued') && !empty($item->originInfo->dateIssued[1]) && intval($item->originInfo->dateIssued[1]) != 0) {
             $static_doc['pub_date'] = intval($item->originInfo->dateIssued[1]);
         }
@@ -113,13 +117,13 @@
             }
             $static_doc['format'] = $type;
         }
-        
+
         if(is_array($item->titleInfo)){
             $title_nf = $item->titleInfo[0]->title;
         }else{
             $title_nf = $item->titleInfo->title;
         }
-        
+
         $title_link_friendly = strtolower($title_nf);
         //Make alphanumeric (removes all other characters)
         $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
@@ -129,11 +133,11 @@
         $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
         //Convert whitespaces and underscore to dash
         $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
-        
+
         if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
             //we simply don't add items that have invalid ISBNs
-            
-            //$static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
+
+            //$static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
         }else{
             //may run into errors with this regex.
             $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
@@ -141,7 +145,7 @@
             $static_docs[] = $static_doc;
         }
     }
-    
+
     $complete_object = array();
     $complete_object['start'] = -1;
     $complete_object['limit'] = 0;

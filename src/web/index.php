@@ -21,34 +21,34 @@ EOF;
 
     <div class="container group row">
 		<div class="group span2 middle-position">
-			
+
 			 <?php require_once('includes/logo.php');?>
-		
+
 		</div><!--end logo include-->
-		
+
 		<div class="main span8">
       		<div id="landing-stack"></div>
     	</div><!--end main-->
 
-			
+
 		<div class="span4-negative middle-position-search">
 		<div class="dive-in">
 			<span class="text cyan"> &larr; Click a book to dive into the stacks</span></p>
-		</div>	
+		</div>
 			<form id="search2" method="get" action="<?php echo $www_root?>/search">
             	<input type="hidden" style="display:none" name="search_type" value="keyword"/>
             	<input type="text" autofocus="autofocus" name="q" placeholder="Search"/>
             	<input type="submit" name="submit_search" id="itemsearch" value="Go!"/>
 			</form>
 			<a id="inline" href="#advanced" style="display:none">Advanced Search</a>
-			<a href="<?php echo $www_root?>/search?advanced=true" class="button advanced-search2">Advanced Search</a>  
+			<a href="<?php echo $www_root?>/search?advanced=true" class="button advanced-search2">Advanced Search</a>
 			<br/>
-			
-			<p class="text">Welcome to StackLife, a new way to browse the Harvard Library collection.</p> 
+
+			<p class="text">Welcome to StackLife, a new way to browse the Harvard Library collection.</p>
 			<p class="text"><span class="cyan">This is a prototype.</span> We’re eager to hear from you about what works, what doesn’t, and what you’d like to see. Email us at <span class="cyan">lil@law.harvard.edu</span>!</p>
 			<br/>
-		
-			
+
+
 			<div class="about-button">
 				<a href="<?php echo $www_root ?>/explainer.php" class="heading">How it works</a>
 			</div>
