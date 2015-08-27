@@ -104,15 +104,19 @@ foreach($user_books as $id) {
     if(!$pages) $pages = 200;
 
 
-    $year = intval($item->originInfo->dateIssued[1]);
+    if(is_array($item->originInfo->dateIssued)){
+        $year = intval($item->originInfo->dateIssued[1]);
+    }else{
+        $year = intval($item->originInfo->dateIssued);
+    }
+    $year = substr($year, 0, 4);
 
     $format = $item->typeOfResource;
     //need to fix
     if($format == "text"){
         $format = "Book";
     }
-
-    $year = substr($year, 0, 4);
+    
     //$format = str_replace(" ", "", $format);
 
     //still don't have sort order
@@ -121,15 +125,22 @@ foreach($user_books as $id) {
 
     $push = true;
     if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
-        $link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
-        $push = false;
-        $id = 000;
+        //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;  
+        //$id = 000;
+        
         $hits = $hits - 1;
+        $push = false;
+        //we simply don't push this item if it doesn't have a valid ISBN.
     }else{
         //may run into errors with this regex.
-        $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-        $id = $isbn;
-        $link = "/item/" . $title_link_friendly . '/' . $isbn;
+        if(!is_string($item->identifier[0])){
+            $push = false;
+            $hits = $hits - 1;
+        }else{
+            $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
+            $id = $isbn;
+            $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+        }
     }
 
     $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $year, $title_link_friendly, $format, $loc_sort_order, $link);

@@ -5,25 +5,14 @@ $(document).ready(function() {
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : uid, search_type : 'id', start : '0', limit : '1'},
+  		data: {query : uid, search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-  			if(data.docs[0].loc_call_num_sort_order && data.docs[0].loc_call_num_sort_order != undefined)
-  				loc_call_num_sort_order = data.docs[0].loc_call_num_sort_order[0];
-  			uniform_count = data.docs[0].ut_count;
-  			uniform_id = data.docs[0].ut_id;
-  			if (data.docs[0].lcsh != undefined) { 
-				$.each(data.docs[0].lcsh, function(i, item) {
-					//item = item.replace(/\.\s*$/, '');
-					if(anchor_subject === '') {
-  						anchor_subject = item;
-  					}
-				});
-			}
-			var this_details = data.docs[0];
+  			
+			var this_details = match_values(data);
 
 			
-			  draw_item_panel(this_details);
+			 draw_item_panel(this_details);
 			
     }
 	});
@@ -147,23 +136,19 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
 		var isbn = '';
-		if (item_details.id_isbn && item_details.id_isbn[0] && item_details.id_isbn[0].split(' ')[0]) {
-			isbn = item_details.id_isbn[0].split(' ')[0];
-		}
-		
-		item_details.isbn = isbn;
+		isbn = item_details.isbn;
 
-		var oclc = '';
+		/**var oclc = '';
 		if (item_details.id_oclc) {
 			oclc = item_details.id_oclc;
 		}
 		
-		item_details.oclc = oclc;
+		item_details.oclc = oclc;**/
 		
-		var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:' + oclc + ',ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
+		var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
 		$("#gbscript").attr('src', gbsrc);		
 		
-		GBSArray = ['ISBN:' + isbn, 'OCLC:' + oclc];
+		GBSArray = ['ISBN:' + isbn];
 		$.getScript($("#gbscript").attr('src'));
 
                 /*
@@ -184,19 +169,18 @@ $(document).ready(function() {
 		var template = Handlebars.compile(source);
     $('#shelves-panel').html(template(item_details));
     
-    $.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
+   /** $.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
       if(data) {
         var source = $("#availability-template").html();
         var template = Handlebars.compile(source);
         $('#availability-panel').html(template(data));
       }
-    });
+    });**/
     
     $("#toc").html('');
-    if('505a' in item_details.source_record) {
-        var sr = item_details.source_record;
-        var toc = String(sr['505a']);
-        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />');
+    if(item_details.tableOfContents) {
+        toc = item_details.tableOfContents;
+        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />').replace(/[\/]/g, '<br />').replace(/[\\]/g, '<br />');
         if(toc) {
             $("#toc").html('<p>' + toc + '</p>')
             $(".toc-title").show();
@@ -205,7 +189,7 @@ $(document).ready(function() {
         $(".toc-title").hide();
     }
 		
-		// If we have our first isbn, get affiliate info. if not, hide the DOM element
+	/**	// If we have our first isbn, get affiliate info. if not, hide the DOM element
 		if (isbn) {
 			$.ajax({
 				type: "GET",
@@ -222,7 +206,7 @@ $(document).ready(function() {
 		});
 		} else {
 			$('.buy').hide();
-		}
+		}**/
 		
 		if(item_details.this_button) {
       $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
@@ -404,3 +388,68 @@ function left_pad(value) {
 	}
 	return value;
 }
+
+function match_values(data){
+    
+    var subject = [];
+    if(data.mods.subject instanceof Array) {
+        anchor_subject = data.mods.subject[0].topic;
+
+        data.mods.subject.forEach(function(item){
+            subject.push(item.topic);
+        })
+
+        if(anchor_subject instanceof Array){
+            anchor_subject = anchor_subject[0];   
+        }
+    }else if(data.mods.subject instanceof Object){
+        if(anchor_subject === '') {
+            anchor_subject = data.mods.subject.topic;
+        }
+        subject = data.mods.subject.topic;
+    }
+    this_details = data.mods;
+
+    if(this_details.titleInfo instanceof Array){
+        title_nf = this_details.titleInfo[0].title;
+    }else{
+        title_nf = this_details.titleInfo.title;
+    }
+    this_details.title = title_nf;
+
+    //Setting up some variables to make it easier for templating
+    this_details.lcsh = subject;
+    this_details.title = title_nf.replace(/\//g,"");
+    place = this_details.originInfo.place;
+    if(place instanceof Array){
+        place.forEach(function(entry){
+            if(entry.text){
+                this_details.pub_location = entry.text;
+            }
+        })
+    }else{
+        this_details.pub_location = place.text;
+    }
+    this_details.publisher = this_details.publisher;
+    this_details.pub_date = this_details.dateIssued;
+
+    this_details.shelfrank = 30;
+    this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
+
+    if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
+        link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
+    }else{
+        //may run into errors with this regex.
+        isbn = this_details.identifier[0].replace(/\s.*/,"");
+        if(isbn.length == 10 || isbn.length == 13){
+          link = "../" + this_details.title_link_friendly + "/" + isbn;
+          this_details.isbn = isbn;
+          this_details.id_isbn = isbn;  
+        }
+    }
+    return this_details;
+}
+

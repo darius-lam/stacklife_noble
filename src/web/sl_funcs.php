@@ -209,17 +209,16 @@ function set_also_viewed()
 {
 	connect_db();	
 
-	$also        = trim($_REQUEST['also']);
-	$id        = trim($_REQUEST['id']);
+	$also = trim($_REQUEST['also']);
+	$id = trim($_REQUEST['id']);
 
-  $addClient  = "INSERT INTO sl_also_viewed (book_one,book_two) VALUES ('$id','$also')";
+    $addClient  = "INSERT INTO sl_also_viewed (book_one,book_two) VALUES ('$id','$also')";
 
-  mysql_query($addClient) or die(mysql_error());
-    
-  $addClientReverse  = "INSERT INTO sl_also_viewed (book_one,book_two) VALUES ('$also','$id')";
+    mysql_query($addClient) or die(mysql_error());
+    $addClientReverse  = "INSERT INTO sl_also_viewed (book_one,book_two) VALUES ('$also','$id')";
 
-  mysql_query($addClientReverse) or die(mysql_error());
-  mysql_close();
+    mysql_query($addClientReverse) or die(mysql_error());
+    mysql_close();
 }
 
 function set_book_tag()

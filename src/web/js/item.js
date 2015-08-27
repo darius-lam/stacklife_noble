@@ -23,66 +23,8 @@ $(document).ready(function() {
   			uniform_count = data.mods.ut_count;
   			uniform_id = data.mods.ut_id;
             
-            var subject = [];
-            if(data.mods.subject instanceof Array) {
-                anchor_subject = data.mods.subject[0].topic;
-                
-                data.mods.subject.forEach(function(item){
-                    subject.push(item.topic);
-                })
-                
-                if(anchor_subject instanceof Array){
-                    anchor_subject = anchor_subject[0];   
-                }
-            }else if(data.mods.subject instanceof Object){
-                if(anchor_subject === '') {
-                    anchor_subject = data.mods.subject.topic;
-                }
-                subject = data.mods.subject.topic;
-            }
-            console.log(anchor_subject);
-			var this_details = data.mods;
+            var this_details = match_values(data);
             
-            if(this_details.titleInfo instanceof Array){
-                title_nf = this_details.titleInfo[0].title;
-            }else{
-                title_nf = this_details.titleInfo.title;
-            }
-            this_details.title = title_nf;
-            
-            //Setting up some variables to make it easier for templating
-            this_details.lcsh = subject;
-            this_details.title = title_nf.replace(/\//g,"");
-            var place = this_details.originInfo.place;
-            if(place instanceof Array){
-                place.forEach(function(entry){
-                    if(entry.text){
-                        this_details.pub_location = entry.text;
-                    }
-                })
-            }else{
-                this_details.pub_location = place.text;
-            }
-            this_details.publisher = this_details.publisher;
-            this_details.pub_date = this_details.dateIssued;
-            
-            this_details.shelfrank = 30;
-            this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
-            this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
-            this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
-            this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
-            
-            if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
-                link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
-            }else{
-                //may run into errors with this regex.
-                isbn = this_details.identifier[0].replace(/\s.*/,"");
-                if(isbn.length == 10 || isbn.length == 13){
-                  link = "../" + this_details.title_link_friendly + "/" + isbn;
-                  this_details.isbn = isbn;
-                  this_details.id_isbn = isbn;  
-                }
-            }
             console.log(this_details);
             
 			if ( History.enabled ) {
@@ -168,15 +110,15 @@ $(document).ready(function() {
 
 		// store this as an "also viewed"
 		$.each(alsoviewed, function(i, item){
-      $.ajax({
-        type: "POST",
-        url: slurl,
-        data: "also="+ item + "&id=" + item_details.id_isbn + "&function=set_also_viewed",
-        success: function(){
-        }
-      });
-    });
-    alsoviewed.push(item_details.id_isbn);
+          $.ajax({
+            type: "POST",
+            url: slurl,
+            data: "also="+ item + "&id=" + uid + "&function=set_also_viewed",
+            success: function(){
+            }
+          });
+        });
+        alsoviewed.push(uid);
 
 		// add to recently viewed
 		$.ajax({
@@ -186,7 +128,7 @@ $(document).ready(function() {
 			async: false
 		});
 		recentlyviewed += '&recently[]=' + uid;
-
+        
 		// replace creator list
 		item_details.creators = '';
 		if(item_details.name) {
@@ -343,19 +285,18 @@ $(document).ready(function() {
 		$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : this_details.identifier[0].replace(/\s.*/,""), search_type : 'isbn', start : '0', limit : '1'},
+  		data: {query : this_details.id, search_type : 'isbn', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-			  var this_details = data.docs[0];
-              console.log("Got Here");
-			  data.docs[0].this_button = this_button;
+              var this_details = match_values(data);
+			  //data.docs[0].this_button = this_button;
 			  if(History.enabled) {
-			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.id);
+			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.id_isbn);
 			  }
 			  else {
-        	draw_item_panel(data.docs[0]);
+        	   draw_item_panel(this_details);
+              }
         }
-      }
 	  });
 		$('.active-item').removeClass('active-item');
 		$(this).parent().addClass('active-item');
@@ -515,6 +456,71 @@ function left_pad(value) {
 		return '0' + value;
 	}
 	return value;
+}
+
+function match_values(data){
+    
+    var subject = [];
+    if(data.mods.subject instanceof Array) {
+        anchor_subject = data.mods.subject[0].topic;
+
+        data.mods.subject.forEach(function(item){
+            subject.push(item.topic);
+        })
+
+        if(anchor_subject instanceof Array){
+            anchor_subject = anchor_subject[0];   
+        }
+    }else if(data.mods.subject instanceof Object){
+        if(anchor_subject === '') {
+            anchor_subject = data.mods.subject.topic;
+        }
+        subject = data.mods.subject.topic;
+    }
+    console.log(anchor_subject);
+    this_details = data.mods;
+
+    if(this_details.titleInfo instanceof Array){
+        title_nf = this_details.titleInfo[0].title;
+    }else{
+        title_nf = this_details.titleInfo.title;
+    }
+    this_details.title = title_nf;
+
+    //Setting up some variables to make it easier for templating
+    this_details.lcsh = subject;
+    this_details.title = title_nf.replace(/\//g,"");
+    place = this_details.originInfo.place;
+    if(place instanceof Array){
+        place.forEach(function(entry){
+            if(entry.text){
+                this_details.pub_location = entry.text;
+            }
+        })
+    }else{
+        this_details.pub_location = place.text;
+    }
+    this_details.publisher = this_details.publisher;
+    this_details.pub_date = this_details.dateIssued;
+
+    this_details.shelfrank = 30;
+    this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
+
+    if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
+        link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
+    }else{
+        //may run into errors with this regex.
+        isbn = this_details.identifier[0].replace(/\s.*/,"");
+        if(isbn.length == 10 || isbn.length == 13){
+          link = "../" + this_details.title_link_friendly + "/" + isbn;
+          this_details.isbn = isbn;
+          this_details.id_isbn = isbn;  
+        }
+    }
+    return this_details;
 }
 
 function eliminateDuplicatesStrings(arr) {

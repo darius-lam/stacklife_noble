@@ -15,11 +15,13 @@ echo <<<EOF
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
   <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
 
+<script src="//use.typekit.net/izr1jbf.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    
   <script type="text/javascript" src="$www_root/stackview/jquery.stackview.min.js"></script>
   <script type="text/javascript" src="$www_root/js/handlebars.js"></script>
   <script type="text/javascript" src="$www_root/js/jquery.fancybox-1.3.4.pack.js"></script>
     <link rel="stylesheet" href="$www_root/css/bootstrap.css" type="text/css" />	
-
   <link rel="stylesheet" href="$www_root/css/template.css" type="text/css" />
   <link rel="stylesheet" href="$www_root/stackview/jquery.stackview.css" type="text/css" />
 

@@ -38,7 +38,7 @@
         $static_doc = array('title' => 'Unknown Title', 'creator' => array(), 'measurement_page_numeric' => 0, 'measurement_height_numeric' => 0, 'pub_date' => 0);
 
         // boy i love inconsistent data
-        // The labels in LC and the Awesome API don't always match. Let's align those here.
+        // The labels in noblenet and the Awesome API don't always match. Let's align those here.
         if (
           !is_array($item->titleInfo)
           && property_exists($item->titleInfo, 'title')
@@ -61,8 +61,13 @@
 
         if (is_array($item->name)) {
           foreach($item->name as $name) {
-            // XXX - make sure that 'namePart' exists
-            array_push($static_doc['creator'], $name->namePart);
+            // XXX - make sure that namePart exists
+            if(is_array($name->namePart)){
+                array_push($static_doc['creator'], $name->namePart[0]);
+            }else{
+                array_push($static_doc['creator'], $name->namePart);
+            }
+            
           }
         }
         else if (property_exists($item->name, 'namePart') && !empty($item->name->namePart)) {
@@ -72,42 +77,41 @@
             $static_doc['creator'] = array($item->name->namePart);
           }
         }
-
-        //really ugly down here.
-        if (property_exists($item->physicalDescription, 'extent') && !empty($item->physicalDescription->extent)) {
-            $physical_attributes = explode(' ',preg_replace('/[^0-9]/',' ',$item->physicalDescription->extent));
-            $height = NULL;
-            $pages = NULL;
-
-            foreach($physical_attributes as $val){
-                intval($val);
-                if($val != 0){
-                    $pages = intval($val);
-                    $static_doc['measurement_page_numeric'] = $pages;
-                    break;
-                }
+        
+        //------------------------------------
+        //Get physical description of the item
+        //------------------------------------
+        
+        if (!empty($item->physicalDescription->extent)) {
+            if( preg_match('/([1-9]*\s*)(?=cm)/',$item->physicalDescription->extent,$height) ){
+                $height_cm= $height[0];
             }
-
-            foreach(array_reverse($physical_attributes) as $val){
-                $val = intval($val);
-                if($val!= 0){
-                    $height = $val;
-
-                    $static_doc['measurement_height_numeric'] = $height;
-                    break;
-                }
+            if( preg_match('/([1-9]*\s*)(?=p)/',$item->physicalDescription->extent,$p)) {
+               $pages = $p[0];
             }
         }
 
+        if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
+        if(!$pages) $pages = 200;
+        $static_doc['measurement_page_numeric'] = $pages;
+        $static_doc['measurement_height_numeric'] = $height_cm;
+        
+        //--------------
+        //Get shelfrank
+        //--------------
+        
         if (property_exists($item, 'shelfrank') && !empty($item->shelfrank)) {
             $static_doc['shelfrank'] = $item->shelfrank;
         }
 
-        //set shelfrank to 0 for now
-        $static_doc['shelfrank'] = 15;
+        //set shelfrank to random number for now
+        $static_doc['shelfrank'] = 35;
 
-        if (property_exists($item->originInfo, 'dateIssued') && !empty($item->originInfo->dateIssued[1]) && intval($item->originInfo->dateIssued[1]) != 0) {
+        
+        if(is_array($item->originInfo->dateIssued)){
             $static_doc['pub_date'] = intval($item->originInfo->dateIssued[1]);
+        }else{
+            $static_doc['pub_date'] = intval($item->originInfo->dateIssued);
         }
 
         if (property_exists($item, 'typeOfResource') && !empty($item->typeOfResource)) {
@@ -140,9 +144,11 @@
             //$static_doc['link'] = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
         }else{
             //may run into errors with this regex.
-            $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-            $static_doc['link'] = "/item/" . $title_link_friendly . '/' . $isbn;
-            $static_docs[] = $static_doc;
+            if(is_string($item->identifier[0])){
+                $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
+                $static_doc['link'] = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                $static_docs[] = $static_doc;
+            }
         }
     }
 

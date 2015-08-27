@@ -29,7 +29,7 @@ loc_call_num_sort_order = '';
 anchor_subject = '',
 uniform_id = '',
 uniform_count = '',
-uid = '09A551FE-4A50-36A3-2F45-D8D74CFCE6D7',
+uid = '0465007864',
 title = '',
 stackheight = $(window).height();
 
@@ -39,7 +39,7 @@ var www_root = '<?php echo $www_root ?>';
 var recentlyviewed = '';
 var alsoviewed = new Array();
 
-var GBSArray = ['ISBN:<?php echo $isbn_trim ?>', 'OCLC:<?php echo $oclcnum ?>'];
+var GBSArray = ['ISBN:<?php echo $isbn_trim ?>'];
 
 google.load("books", "0");
 
@@ -204,11 +204,11 @@ $(document).ready(function() {
 
 
       	<div class="main span8">
-      		<div class="post-it note3">
+      		<!-- <div class="post-it note3">
       			<p>Depth of the color blue indicates amount of use by the Harvard community since 2002</p>
       			
       			<p>We call this &quot;StackScore&quot;</p>
-      		</div>
+      		</div>-->
       		
       		<div class="post-it note4">
       			<p>Thickness of the book is based on page count, length indicates the actual length</p>
@@ -244,7 +244,7 @@ $(document).ready(function() {
 	<!-- //////////begin templates//////////////////// -->
 	
 
-  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:<?php echo $oclcnum ?>,ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>
+  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>
   </div> <!--end wrapper-->
    
   <script id="item-template" type="text/x-handlebars-template">

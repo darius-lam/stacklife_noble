@@ -1,5 +1,5 @@
 <?php
-
+    
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
   
   //gets the id "string" of the book.  Find more in .htaccess
@@ -12,8 +12,8 @@
   $sort = urlencode($_GET['sort']);
 
   //$url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset&sort=$sort";
-  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
-   //$url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=20";
+  //$url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+   $url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=Cognition&count=25&startPage=0";
 
 
   // Get facets and filters
@@ -109,8 +109,12 @@
     if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
     if(!$pages) $pages = 200;
       
+    if(is_array($item->originInfo->dateIssued)){
+        $year = intval($item->originInfo->dateIssued[1]);
+    }else{
+        $year = intval($item->originInfo->dateIssued);
+    }
     
-    $year = intval($item->originInfo->dateIssued[1]);
    
     $format = $item->typeOfResource;
     //need to fix
@@ -127,15 +131,22 @@
       
     $push = true;
     if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
-        $link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;   
-        $push = false;
-        $id = 000;
+        //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;  
+        //$id = 000;
+        
         $hits = $hits - 1;
+        $push = false;
+        //we simply don't push this item if it doesn't have a valid ISBN.
     }else{
         //may run into errors with this regex.
-        $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-        $id = $isbn;
-        $link = "/item/" . $title_link_friendly . '/' . $isbn;
+        if((!is_string($item->identifier[0]))){
+            $push = false;
+            $hits = $hits - 1;
+        }else{
+            $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
+            $id = $isbn;
+            $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+        }
     }
     
       

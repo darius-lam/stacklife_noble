@@ -52,8 +52,8 @@ $(document).ready(function() {
 	foreach(array_reverse($_SESSION['books']) as $id => $past_book){
 		if($id != $uid) {
 	?>
-		recentlyviewed += ('&recently[]=<?php echo $id ?>');
-		alsoviewed.push('<?php echo $id ?>');
+		recentlyviewed += ('&recently[]=<?php echo $uid ?>');
+		alsoviewed.push('<?php echo $uid ?>');
 	<?php }
 	} ?>
 }); //End document ready
@@ -73,7 +73,7 @@ $(document).ready(function() {
 		<div id="contextData" class="group span2">
 
 			<?php require_once('includes/logo.php');?>
-
+            
         	<div id="overlay-buttons">
           		<div id="shelves-panel"></div>
           		<div id="tagGraph"></div>
