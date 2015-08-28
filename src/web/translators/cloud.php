@@ -12,8 +12,8 @@
   $sort = urlencode($_GET['sort']);
 
   //$url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset&sort=$sort";
-  //$url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
-   $url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=Cognition&count=25&startPage=0";
+  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+   //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=Cognition&count=25&startPage=0";
 
 
   // Get facets and filters
