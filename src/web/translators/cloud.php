@@ -130,11 +130,13 @@
     $loc_sort_order= 10;
 
     $push = true;
+
+    // I love inconsistent data!
     $itemid = $item->identifier;
     if (is_array($item->identifier)) {
       $itemid = $item->identifier[0];
     }
-    // I love inconsistent data!
+    
     if(!empty($itemid->{'@attributes'}->invalid) && ($itemid->{'@attributes'}->invalid == 'yes')){
         //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
         //$id = 000;

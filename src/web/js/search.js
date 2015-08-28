@@ -17,7 +17,7 @@ var util = (function () {
         }
         return -1;
     }
-    
+
     // Returns an array of http params
 	my.get_uri_params = function() {
 	    var vars = [], hash;
@@ -29,8 +29,8 @@ var util = (function () {
 	    	hash = hashes[i].split('=');
 	    	vars[hash[0]] = [];
 	    }
-	    
-	    // populate newly created entries with values 
+
+	    // populate newly created entries with values
 	    for(var i = 0; i < hashes.length; i++) {
 	        hash = hashes[i].split('=');
 	        if (hash[1]) {
@@ -40,7 +40,7 @@ var util = (function () {
 
 	    return vars;
 	}
-    
+
     my.is_advanced = function() {
     	var uri_params = util.get_uri_params();
 
@@ -50,7 +50,7 @@ var util = (function () {
     		return false;
 		}
     }
-	
+
 	// Clean up field names
 	my.massage_field_name = function(field_name) {
 		var field_assoc = new Object;
@@ -62,8 +62,8 @@ var util = (function () {
 		field_assoc['pub_date'] = 'Year';
 		return field_assoc[field_name];
 	}
-	
-	// On initial load, populate search field and page title 
+
+	// On initial load, populate search field and page title
 	// with http params
 	my.populate_form = function() {
 		$('#search input:nth-child(2)').val(config.query);
@@ -71,19 +71,19 @@ var util = (function () {
 		document.title = config.query + ' | StackLife Search';
 	}
 
-    return my; 
+    return my;
 }());
 
 // The class to hold all config related items
-var config = (function () { 
+var config = (function () {
 	var my = {};
-	
+
 	// The numeric value the slider operates on
 	my.scaled_field = 'shelfrank';
-	
+
     // LibraryCloud location:
     my.lc_url = www_root + '/translators/cloud.php';
-	
+
 	// We need to strip stop words out of our searches
 	// TODO: this feels like a bit of a kludge. improve.
 	my.stop_words = ["a", "an", "and", "are", "as", "at", "be", "but", "by",
@@ -91,18 +91,18 @@ var config = (function () {
         "no", "not", "of", "on", "or", "s", "such",
         "t", "that", "the", "their", "then", "there", "these",
         "they", "this", "to", "was", "will", "with"];
-	
+
     uri_params = util.get_uri_params();
 
     my.start = 0;
     my.limit = 15;
     my.sort_field = 'shelfrank';
     my.sort_direction = 'desc'
-	
+
 	// For incoming searches, we break down the query into filter pairs
 	my.search_filters = new Array();
-	
-	
+
+
 	if (uri_params['search_type'] && uri_params['search_type'][0]) {
 	    my.search_type = uri_params['search_type'][0];
     } else {
@@ -112,77 +112,77 @@ var config = (function () {
     my.query = '';
 
     if (uri_params['q'] && uri_params['q'][0]) {
-        
+
         my.query = uri_params['q'][0];
-        
+
         var terms = uri_params['q'][0].split(" ");
-        
-        if (terms.length > 0){            
+
+        if (terms.length > 0){
             $.each(terms, function(i, item) {
                 if ($.inArray(item, my.stop_words) === -1) {
         			my.search_filters.push(item);
     			}
     		});
         }
-        
+
 	    //my.query = uri_params['q'][0];
     }
-	
+
 	// The container for our filters (when someone clicks a facet, that becomes
 	// a fliter
-	my.filters = new Array();	
-    
-    // Push any incoming filters onto our filters list (these would 
+	my.filters = new Array();
+
+    // Push any incoming filters onto our filters list (these would
     // probably come from an advanced search
     if (uri_params['filter'] && uri_params['filter'][0]) {
     	my.filters = my.filters.concat(uri_params['filter']);
     }
-	
+
     // The list of facets we want to get from LibraryCloud and display
 	my.facets = ['format', 'holding_libs','lcsh', 'creator', 'pub_date', 'language'];
-	
-	// The list of facets we want to display in list form (the missing 
+
+	// The list of facets we want to display in list form (the missing
 	// facets are used by a jQuery UI widget or ...)
 	my.facets_to_display = [
                      'format', 'holding_libs','lcsh', 'creator', 'pub_date', 'language'];
-	
+
 	// Facets to be opened (clamshelled open)
 	my.facets_open_by_default = ['format',  'holding_libs'];
-	
+
 	// The number of facet results we want to display for each category
 	my.facet_limits = {'format' : 10, 'holding_libs' : 10, 'lcsh' : 10,
                            'creator' : 10, 'pub_date' : 10, 'language' : 10 };
-	
+
 	// A method to combine all of the above params into a query string
 	// we can send to LibraryCloud
 	my.get_query_string = function() {
 		var composite_query = my.search_type + ':' + my.query;
 		var std_params = ['search_type=' + my.search_type, 'query=' + encodeURI(my.query),
-		                  'start=' + my.start, 'limit=' + my.limit, 
+		                  'start=' + my.start, 'limit=' + my.limit,
 		                  'sort=' + my.sort_field];
-				
+
 		/**$.each(my.facets, function(i, item) {
 			std_params.push('facet=' + item);
 		});
-		
+
 		$.each(my.filters, function(i, item) {
 			std_params.push('filter='+ item);
 		});
-		
+
 		$.each(my.search_filters, function(i, item) {
 			std_params.push('filter=' + my.search_type + ':'+ item);
 		});**/
 
 		return std_params.join('&');
 	}
-	
-	return my; 
+
+	return my;
 }());
 
 // A class to manage our filters (a filter is cretaed when a facet is selected)
 var filter = (function () {
     var my = {};
-	
+
     // When we add a facet...
 	my.add_filter = function(filter_value) {
 		var index = jQuery.inArray(filter_value, config.filters);
@@ -200,14 +200,14 @@ var filter = (function () {
 					}
 				});
 			}
-			
+
 			// We have a value that we need to replace
 			if (!replaced) {
 				config.filters.push(filter_value);
 			}
-		} 
+		}
 
-		library_cloud.get_results(); 
+		library_cloud.get_results();
 		view.draw_filters();
 		view.draw_results();
 		view.draw_facets();
@@ -219,15 +219,15 @@ var filter = (function () {
 		if (index != -1) {
 			config.filters.splice(index, 1);
 		}
-		
+
 		library_cloud.get_results();
 		view.draw_filters();
 		view.draw_results();
 		view.draw_persistent_controls();
 		view.draw_facets();
 	}
-	
-    return my; 
+
+    return my;
 }());
 
 // The class that we use to get results from LibraryCloud, we hold the
@@ -239,45 +239,59 @@ var library_cloud = (function () {
     console.log(config);
     // The AJAX call to get the results from LibraryCloud
 	my.get_results = function() {
-		$.ajax({
+    // XXX - This is kind of hacky
+		if (!uri_params['q'] || uri_params['q'] === '') {
+      // Cam: The only param that really matters is "num_found=0", but I
+      // don't want to be screwing around finding "cannot find parameter"
+      // errors everywhere on the off chance I can't read (likely)
+      my.lc_results = {
+        docs: [],
+        limit: "15",
+        start: 0,
+        num_found: 0
+      };
+    }
+    else {
+      $.ajax({
 		      // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
-			  url: config.lc_url + '?' + config.get_query_string(),
-              //url: config.lc_url +  config.get_query_string(),
-			  async: false,
-              dataType: "JSON",
-			  cache: false,
-			  success:
-				function (results) {
-					my.lc_results = results;
-				}
-		});
+  			  url: config.lc_url + '?' + config.get_query_string(),
+          //url: config.lc_url +  config.get_query_string(),
+  			  async: false,
+          dataType: "JSON",
+  			  cache: false,
+  			  success:
+  				function (results) {
+  					my.lc_results = results;
+  				}
+  		});
+    }
 	}
-     
-    return my; 
+
+    return my;
 }());
 
 // The class we use to draw our results, facets, filters, etc in the DOM
-var view = (function () { 
+var view = (function () {
 	var my = {};
-	
+
 	// Draw our LibraryCloud results (the table containg the title, creator...)
 	my.draw_results = function () {
-	    
+
 	    var showing_upper_bound = config.start + config.limit;
-	    
+
 	    if (library_cloud.lc_results.num_found <= showing_upper_bound) {
 	        showing_upper_bound = library_cloud.lc_results.num_found;
 	    }
-	    
+
 	    // Draw search results count and paging with Handlebars template
         var source = $("#result-hits-container-template").html();
         var template = Handlebars.compile(source);
-        var context = {'start': config.start, 
+        var context = {'start': config.start,
             'showing': showing_upper_bound,
             'num_found': library_cloud.lc_results.num_found,
             'query': config.query};
         $('#result-hits-container').html(template(context));
-	    
+
 	    // Draw search results Handlebars template
         var source = $("#search-results-template").html();
         var template = Handlebars.compile(source);
@@ -296,23 +310,23 @@ var view = (function () {
 		if (library_cloud.lc_results.facets) {
 			$.each(library_cloud.lc_results.facets, function(i, item) {
 				// Look for anything that's not empty and is in our list of
-				// facets to display 
+				// facets to display
 				if (!jQuery.isEmptyObject(item) && jQuery.inArray(i, config.facets_to_display) !== -1) {
-					
+
 					// We want some of our facets clamshelled open by default and some clamshelled
 					// closed by default.
 					var style_markup = '';
 					if (jQuery.inArray(i, config.facets_open_by_default) === -1) {
 						style_markup = 'style="display:none;"';
 					  }
-					
+
 					facets += '<div class="facet_set"><p class="facet_heading">' + util.massage_field_name(i) + '<span class="arrow"></span></p><ul class="facet_pairs" ' + style_markup + '>';
 					var count = 1;
 					$.each(item, function(facet_key, facet_value) {
 						var facet_key_display = facet_key;
 
 						facets += '<li id="' + i + ':' + facet_key + '" class="add_filter">' + facet_key_display + '<span class="facet-count"> (' + facet_value + ')</span></li>';
-						// This business of getting the length by turning the 
+						// This business of getting the length by turning the
 						// object into a string and then getting the length is a total kludge
 						if (count == config.facet_limits[i] && $.param(item).split('&').length > count) {
 							facets += '<li id="' + i + '" class="more_facets">more</li>';
@@ -323,12 +337,12 @@ var view = (function () {
 					facets += '</ul></div>';
 				}
 			});
-			
+
 		}
 		$('.facets').html(facets);
 
 	}
-	
+
 	// Some controls we only want to draw once, let's do that here
 	my.draw_persistent_controls = function () {
 		if (library_cloud.lc_results.docs.length > 0) {
@@ -344,21 +358,21 @@ var view = (function () {
 			$('select#valueA, select#valueB').selectToUISlider({
 				labels: 5,
 				sliderOptions: {
-					stop: function(event) { 
+					stop: function(event) {
 						filter.add_filter(config.scaled_field + ':[' + $('select#valueA').attr('value') + ' TO ' + $('select#valueB').attr('value') + ']');
-					} 
+					}
 				}
 			});
 		}
 	}
-	
+
 	// A helper method. Here we'll clean up our filter labels (they go in the
     	// breadcrumbs)
     	massage_filter_labels = function(label) {
     		return label.replace(/^[^:]*:/, '');
     	}
-	
-	// Draw the list of filters that are applied to the result set 
+
+	// Draw the list of filters that are applied to the result set
 	my.draw_filters = function () {
 		var filter_text = '<ul id="facet_bread_crumb">';
 		$.each(config.filters, function(i, item){
@@ -367,24 +381,24 @@ var view = (function () {
 		filter_text += '</ul>';
 		$('#facet_bread_crumb_container').html(filter_text);
 	}
-	
+
 	// Draw the paging controls (the next and prev arrows)
 	my.draw_paging_controls = function () {
-		
+
 		if (config.start + config.limit <= library_cloud.lc_results.num_found) {
 			$('.next-page').show();
 		} else {
 			$('.next-page').hide();
 		}
-		
+
 		if (config.start - config.limit >= 0) {
 			$('.prev-page').show();
 		}
 	}
-	
-	return my; 
+
+	return my;
 }());
-	
+
 // DOM event controls, start
 // A filter is applied...
 $('.add_filter').live('click', function() {
@@ -414,11 +428,11 @@ $('.next-page').live('click', function() {
 // The prev arrow is clicked. Adjust the paging values in config,
 // ask LibraryCloud for some new results, and redraw
 $('.prev-page').live('click', function() {
-	
+
 	if (config.start - config.limit >= 0) {
 		config.start = config.start - config.limit;
 	}
-	
+
 	library_cloud.get_results();
 	view.draw_filters();
 	view.draw_results();
@@ -433,7 +447,7 @@ $('.more_facets').live('click', function() {
 			facet_markup += '<li id="' + facet_field + ':' + i + '" class="add_filter" onClick="$.fancybox.close()">' + i + '<span class="facet-count"> (' + item + ')</span></li>';
 		});
 	 facet_markup += '</ul>';
-	
+
 	$.fancybox({
 		'content' : facet_markup
 	});
@@ -454,33 +468,33 @@ $('.sortable').live('click', function() {
 	} else {
 		config.sort_direction = 'asc';
 	}
-	
+
 	library_cloud.get_results();
 	view.draw_results();
 });
 
 // Advanced search box controls, start
-  	
+
   	// If a user adds another field/query search pair
 	$('.addfield').live('click', function() {
 		$('.searchBox:last').parent().after('<p><select name="filter"><option value="keyword">Keyword anywhere</option><option value="title">Title exact</option><option value="title_keyword">Title contains keyword(s)</option><option value="creator">Author exact (last, first)</option><option value="creator_keyword">Author contains keyword(s)</option><option value="lcsh">Subject exact</option><option value="lcsh_keyword">Subject contains keyword(s)</option></select><input type="text" class="searchBox filter_type" name="q"/></p>');
-		
+
 		if($('#advanced .searchBox').size() > 4)
 			$(this).removeClass('addfield');
 		if($('#advanced .searchBox').size() > 1)
 			$('#addremove span:last').addClass('removefield');
 	});
-	
+
 	// If a user removes a field/query search pair
 	$('.removefield').live('click', function() {
 		$('#advanced .searchBox:last').parent().remove();
-		
+
 		if($('#advanced .searchBox').size() < 2)
 			$(this).removeClass('removefield');
 		if($('#advanced .searchBox').size() < 6)
 			$('#addremove span:first').addClass('addfield');
 	});
-	
+
 	// Control the clamshelling of our facet lists here
 	$('#advanced .facet_set p').live('click', function() {
 		$('#advanced .facet_set p').not(this).next('ul').slideUp();
@@ -497,7 +511,7 @@ $('.sortable').live('click', function() {
 	view.draw_filters();
 	view.draw_paging_controls();
 	util.populate_form();
-	
+
 	if(util.is_advanced()) {
     	document.title = 'Advanced Search | StackLife Search';
     	$('.search-container').hide();
@@ -539,7 +553,7 @@ Handlebars.registerHelper('left_pad', function(value) {
     if (value < 10) {
     	return '0' + value;
     }
-    
+
     return value;
 });
 
@@ -548,7 +562,7 @@ Handlebars.registerHelper('get_sort_direction', function(direction) {
     if (direction === 'asc') {
     	return 'search-arrow-up';
     }
-    
+
     return 'search-arrow-down';
 });
 
@@ -562,14 +576,14 @@ Handlebars.registerHelper("stripes", function(array, even, odd, fn, elseFn) {
     var buffer = "";
     for (var i = 0, j = array.length; i < j; i++) {
       var item = array[i];
- 
+
       // we'll just put the appropriate stripe class name onto the item for now
       item.stripeClass = (i % 2 == 0 ? odd : even);
- 
+
       // show the inside of the block
       buffer += fn(item);
     }
- 
+
     // return the finished buffer
     return buffer;
   }
