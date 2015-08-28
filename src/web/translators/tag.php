@@ -103,20 +103,20 @@ foreach($user_books as $id) {
     if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
     if(!$pages) $pages = 200;
 
-
     if(is_array($item->originInfo->dateIssued)){
         $year = intval($item->originInfo->dateIssued[1]);
     }else{
         $year = intval($item->originInfo->dateIssued);
     }
-    $year = substr($year, 0, 4);
+
 
     $format = $item->typeOfResource;
     //need to fix
     if($format == "text"){
         $format = "Book";
     }
-    
+
+    $year = substr($year, 0, 4);
     //$format = str_replace(" ", "", $format);
 
     //still don't have sort order
@@ -124,24 +124,39 @@ foreach($user_books as $id) {
     $loc_sort_order= 10;
 
     $push = true;
-    if(!empty($item->identifier[0]->{'@attributes'}->invalid) && ($item->identifier[0]->{'@attributes'}->invalid == 'yes')){
-        //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;  
+
+    // I love inconsistent data!
+    $itemid = $item->identifier;
+    if (is_array($item->identifier)) {
+      $itemid = $item->identifier[0];
+    }
+    
+    if(!empty($itemid->{'@attributes'}->invalid) && ($itemid->{'@attributes'}->invalid == 'yes')){
+        //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
         //$id = 000;
-        
+
         $hits = $hits - 1;
         $push = false;
         //we simply don't push this item if it doesn't have a valid ISBN.
     }else{
         //may run into errors with this regex.
-        if(!is_string($item->identifier[0])){
+        //check to see if identifier field is blank
+        if((!is_string($itemid))){
             $push = false;
             $hits = $hits - 1;
         }else{
-            $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-            $id = $isbn;
-            $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+            $isbn = preg_replace("/\s.*/","",$itemid);
+            //check to see if isbn is either 13 or 10 characters long
+            if(strlen($isbn) != 13 && strlen($isbn) != 10){
+                $push = false;
+                $hits = $hits - 1;
+            }else{
+                $id = $isbn;
+                $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+            }
         }
     }
+
 
     $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $year, $title_link_friendly, $format, $loc_sort_order, $link);
     $temp_array  = array_combine($books_fields, $books_data);

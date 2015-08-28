@@ -146,8 +146,10 @@
             //may run into errors with this regex.
             if(is_string($item->identifier[0])){
                 $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-                $static_doc['link'] = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
-                $static_docs[] = $static_doc;
+                if($strlen($isbn) != 13 || strlen($isbn) != 10){
+                    $static_doc['link'] = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                    $static_docs[] = $static_doc;
+                }
             }
         }
     }

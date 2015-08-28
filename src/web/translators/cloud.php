@@ -146,13 +146,20 @@
         //we simply don't push this item if it doesn't have a valid ISBN.
     }else{
         //may run into errors with this regex.
+        //check to see if identifier field is blank
         if((!is_string($itemid))){
             $push = false;
             $hits = $hits - 1;
         }else{
             $isbn = preg_replace("/\s.*/","",$itemid);
-            $id = $isbn;
-            $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+            //check to see if isbn is either 13 or 10 characters long
+            if(strlen($isbn) != 13 && strlen($isbn) != 10){
+                $push = false;
+                $hits = $hits - 1;
+            }else{
+                $id = $isbn;
+                $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+            }
         }
     }
 

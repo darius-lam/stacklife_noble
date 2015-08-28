@@ -25,9 +25,9 @@
 			</div>
               <p>
               	<select name="search_type">
-                      <option value="title_keyword">Title contains keyword(s)</option>
-                      <option value="creator_keyword">Author contains keyword(s)</option>
-                      <option value="lcsh_keyword">Subject contains keyword(s)</option>
+                      <option value="isbn">ISBN</option>
+                      <option value="title">Title contains keyword(s)</option>
+                      <option value="author">Author contains keyword(s)</option>
                       <option value="keyword" selected="selected">Keyword(s) anywhere</option>
                   </select>
                   <input type="text" class="searchBox" name="q"/>

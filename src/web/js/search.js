@@ -230,14 +230,14 @@ var filter = (function () {
     return my;
 }());
 
-// The class that we use to get results from LibraryCloud, we hold the
+// The class that we use to get results from Noblenet, we hold the
 // results here too
 var library_cloud = (function () {
     var my = {};
-    // Holds the JSON we get back from LibraryCloud
+    // Holds the JSON we get back from Noblenet
     my.lc_results;
     console.log(config);
-    // The AJAX call to get the results from LibraryCloud
+    // The AJAX call to get the results from Noblenet
 	my.get_results = function() {
     // XXX - This is kind of hacky
 		if (!uri_params['q'] || uri_params['q'] === '') {
@@ -255,13 +255,13 @@ var library_cloud = (function () {
       $.ajax({
 		      // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
   			  url: config.lc_url + '?' + config.get_query_string(),
-          //url: config.lc_url +  config.get_query_string(),
   			  async: false,
-          dataType: "JSON",
+              dataType: "JSON",
   			  cache: false,
   			  success:
   				function (results) {
   					my.lc_results = results;
+                    console.log(my.lc_results);
   				}
   		});
     }
@@ -477,7 +477,7 @@ $('.sortable').live('click', function() {
 
   	// If a user adds another field/query search pair
 	$('.addfield').live('click', function() {
-		$('.searchBox:last').parent().after('<p><select name="filter"><option value="keyword">Keyword anywhere</option><option value="title">Title exact</option><option value="title_keyword">Title contains keyword(s)</option><option value="creator">Author exact (last, first)</option><option value="creator_keyword">Author contains keyword(s)</option><option value="lcsh">Subject exact</option><option value="lcsh_keyword">Subject contains keyword(s)</option></select><input type="text" class="searchBox filter_type" name="q"/></p>');
+		$('.searchBox:last').parent().after('<p><select name="filter"><option value="keyword">Keyword anywhere</option><option value="title">Title exact</option><option value="author">Author contains keyword(s)</option><option value="isbn">ISBN</option></select><input type="text" class="searchBox filter_type" name="q"/></p>');
 
 		if($('#advanced .searchBox').size() > 4)
 			$(this).removeClass('addfield');
