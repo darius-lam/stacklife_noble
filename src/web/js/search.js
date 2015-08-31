@@ -279,25 +279,27 @@ var view = (function () {
 
 	    var showing_upper_bound = config.start + config.limit;
 
-	    if (library_cloud.lc_results.num_found <= showing_upper_bound) {
-	        showing_upper_bound = library_cloud.lc_results.num_found;
-	    }
+        if(library_cloud.lc_results){
+            if (library_cloud.lc_results.num_found <= showing_upper_bound) {
+                showing_upper_bound = library_cloud.lc_results.num_found;
+            }
 
-	    // Draw search results count and paging with Handlebars template
-        var source = $("#result-hits-container-template").html();
-        var template = Handlebars.compile(source);
-        var context = {'start': config.start,
-            'showing': showing_upper_bound,
-            'num_found': library_cloud.lc_results.num_found,
-            'query': config.query};
-        $('#result-hits-container').html(template(context));
+            // Draw search results count and paging with Handlebars template
+            var source = $("#result-hits-container-template").html();
+            var template = Handlebars.compile(source);
+            var context = {'start': config.start,
+                'showing': showing_upper_bound,
+                'num_found': library_cloud.lc_results.num_found,
+                'query': config.query};
+            $('#result-hits-container').html(template(context));
 
-	    // Draw search results Handlebars template
-        var source = $("#search-results-template").html();
-        var template = Handlebars.compile(source);
-        var context = {'results': library_cloud.lc_results,
-            'sort_direction': config.sort_direction};
-        $('#results').html(template(context));
+            // Draw search results Handlebars template
+            var source = $("#search-results-template").html();
+            var template = Handlebars.compile(source);
+            var context = {'results': library_cloud.lc_results,
+                'sort_direction': config.sort_direction};
+            $('#results').html(template(context));
+        }
 	}
 
 	// Draw our LibraryCloud facets (the list of facets we defined in the config)
@@ -307,7 +309,7 @@ var view = (function () {
 		var facets = '';
 
 		// Did LibraryCloud supply us with any facet results?
-		if (library_cloud.lc_results.facets) {
+		if (library_cloud.lc_results && library_cloud.lc_results.facets) {
 			$.each(library_cloud.lc_results.facets, function(i, item) {
 				// Look for anything that's not empty and is in our list of
 				// facets to display
@@ -345,7 +347,7 @@ var view = (function () {
 
 	// Some controls we only want to draw once, let's do that here
 	my.draw_persistent_controls = function () {
-		if (library_cloud.lc_results.docs.length > 0) {
+		if (library_cloud.lc_results && library_cloud.lc_results.docs.length > 0) {
 
 			// Setup our DOM done so that we can attach a slider to it
             // Draw slider with Handlebars template
@@ -384,7 +386,8 @@ var view = (function () {
 
 	// Draw the paging controls (the next and prev arrows)
 	my.draw_paging_controls = function () {
-
+        
+      if(library_cloud.lc_results){
 		if (config.start + config.limit <= library_cloud.lc_results.num_found) {
 			$('.next-page').show();
 		} else {
@@ -394,6 +397,7 @@ var view = (function () {
 		if (config.start - config.limit >= 0) {
 			$('.prev-page').show();
 		}
+      }
 	}
 
 	return my;
