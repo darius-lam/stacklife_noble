@@ -20,7 +20,12 @@
         $j = json_encode($xml); 
 
         $book_data = json_decode($j);
-        $item = $book_data->mods;
+        
+        if(is_array($book_data->mods)){
+            $items = $book_data->mods;
+        }else{
+            $items = array($book_data->mods);
+        }
 
         $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
 
