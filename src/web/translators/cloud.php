@@ -122,9 +122,13 @@
     }
 
 
-    $format = $item->typeOfResource;
+    $format = $item->physicalDescription->form;
     //need to fix
-    if($format == "text"){
+    if($format == "print"){
+        $format = "Book";
+    }else if($format == 'electronic'){
+        $format = 'Serial';
+    }else{
         $format = "Book";
     }
 
