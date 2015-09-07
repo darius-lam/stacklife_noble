@@ -146,7 +146,7 @@
         }
     }
     
-  if($hits == 0 || count($json) == 0 || $start > 0) {
+  if(count($json) == 0 || $start > 0) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}'; 
   }
   else {
