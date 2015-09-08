@@ -130,8 +130,10 @@ $(document).ready(function() {
     </div>
     <img class="cover-image" src="http://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg" />
     <ul class="access">
+    
       <!-- Fix this down here -->
-      <li><a href="http://id.lib.harvard.edu/aleph/{{id_inst}}/catalog" target="_blank">HOLLIS</a></li>
+      <!--<li><a href="http://id.lib.harvard.edu/aleph/{{id_inst}}/catalog" target="_blank">HOLLIS</a></li>-->
+      
       {{#if url}}
       <li><a href="{{url}}">Online Access</a></li>
       {{/if}}
