@@ -203,14 +203,16 @@ $(document).ready(function() {
             a = 0;
             extra_add = [];
 			$.each(item_details.lcsh, function(i, item) {
-                if(item instanceof Array){
-                    $.each(item, function(b,it){
-                        //item_details.lcsh[a] = it.replace(/\.\s*$/, '');
-                        extra_add.push(it.replace(/\.\s*$/, ''));
-                    });
-                }else{
-                    item_details.lcsh[a] = item.replace(/\.\s*$/, '');
-                    a = a + 1;
+                if(item){
+                    if(item instanceof Array){
+                        $.each(item, function(b,it){
+                            //item_details.lcsh[a] = it.replace(/\.\s*$/, '');
+                            extra_add.push(it.replace(/\.\s*$/, ''));
+                        });
+                    }else{
+                        item_details.lcsh[a] = item.replace(/\.\s*$/, '');
+                        a = a + 1;
+                    }
                 }
 			});
             item_details.lcsh = item_details.lcsh.concat(extra_add);
@@ -460,29 +462,49 @@ function left_pad(value) {
 function match_values(data){
     
     var subject = [];
+    console.log(data);
+    
+    //-------------------------------
+    //get a list of subjects from the book
     if(data.mods.subject instanceof Array) {
         anchor_subject = data.mods.subject[0].topic;
 
         data.mods.subject.forEach(function(item){
-            subject.push(item.topic);
+            if(item.topic){
+                if(item.topic instanceof Array){
+                    item.topic.forEach(function(subtop){
+                        subject.push(subtop);
+                    })
+                }else{
+                    subject.push(item.topic);
+                }
+            }
+            
         })
 
         if(anchor_subject instanceof Array){
             anchor_subject = anchor_subject[0];   
         }
     }else if(data.mods.subject instanceof Object){
-        if(anchor_subject === '') {
-            anchor_subject = data.mods.subject.topic;
-        }
+        anchor_subject = data.mods.subject.topic;
         subject = data.mods.subject.topic;
     }
-    console.log(anchor_subject);
-    this_details = data.mods;
+    //------------------------------------------
 
+    
+    this_details = data.mods;
+    
+    
     if(this_details.titleInfo instanceof Array){
         title_nf = this_details.titleInfo[0].title;
+        if(this_details.titleInfo[0].subTitle){
+            this_details.sub_title = this_details.titleInfo[0].subTitle;
+        }
     }else{
         title_nf = this_details.titleInfo.title;
+        if(this_details.titleInfo.subTitle){
+            this_details.sub_title = this_details.titleInfo.subTitle;
+        }
     }
     this_details.title = title_nf;
 

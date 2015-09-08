@@ -94,7 +94,7 @@ var config = (function () {
 
     uri_params = util.get_uri_params();
 
-    my.start = 0;
+    my.start = 1;
     my.limit = 15;
     my.sort_field = 'shelfrank';
     my.sort_direction = 'desc'
@@ -124,7 +124,7 @@ var config = (function () {
     			}
     		});
         }
-
+        
 	    //my.query = uri_params['q'][0];
     }
 
@@ -236,35 +236,34 @@ var library_cloud = (function () {
     var my = {};
     // Holds the JSON we get back from Noblenet
     my.lc_results;
-    console.log(config);
     // The AJAX call to get the results from Noblenet
 	my.get_results = function() {
     // XXX - This is kind of hacky
 		if (!uri_params['q'] || uri_params['q'] === '') {
-      // Cam: The only param that really matters is "num_found=0", but I
-      // don't want to be screwing around finding "cannot find parameter"
-      // errors everywhere on the off chance I can't read (likely)
-      my.lc_results = {
-        docs: [],
-        limit: "15",
-        start: 0,
-        num_found: 0
-      };
-    }
-    else {
-      $.ajax({
-		      // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
-  			  url: config.lc_url + '?' + config.get_query_string(),
-  			  async: false,
-              dataType: "JSON",
-  			  cache: false,
-  			  success:
-  				function (results) {
-  					my.lc_results = results;
-                    console.log(my.lc_results);
-  				}
-  		});
-    }
+          // Cam: The only param that really matters is "num_found=0", but I
+          // don't want to be screwing around finding "cannot find parameter"
+          // errors everywhere on the off chance I can't read (likely)
+          my.lc_results = {
+            docs: [],
+            limit: "15",
+            start: 0,
+            num_found: 0
+          };
+        }
+        else {
+          $.ajax({
+                  // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
+                  url: config.lc_url + '?' + config.get_query_string(),
+                  async: false,
+                  dataType: "JSON",
+                  cache: false,
+                  success:
+                    function (results) {
+                        my.lc_results = results;
+                        console.log(my.lc_results);
+                    }
+            });
+        }
 	}
 
     return my;
@@ -276,8 +275,8 @@ var view = (function () {
 
 	// Draw our LibraryCloud results (the table containg the title, creator...)
 	my.draw_results = function () {
-
-	    var showing_upper_bound = config.start + config.limit;
+        
+	    var showing_upper_bound = (config.start) * config.limit;
 
         if(library_cloud.lc_results){
             if (library_cloud.lc_results.num_found <= showing_upper_bound) {
@@ -287,7 +286,7 @@ var view = (function () {
             // Draw search results count and paging with Handlebars template
             var source = $("#result-hits-container-template").html();
             var template = Handlebars.compile(source);
-            var context = {'start': config.start,
+            var context = {'start': (config.start-1) * config.limit,
                 'showing': showing_upper_bound,
                 'num_found': library_cloud.lc_results.num_found,
                 'query': config.query};
@@ -388,13 +387,13 @@ var view = (function () {
 	my.draw_paging_controls = function () {
         
       if(library_cloud.lc_results){
-		if (config.start + config.limit <= library_cloud.lc_results.num_found) {
+		if (config.start* config.limit <= library_cloud.lc_results.num_found) {
 			$('.next-page').show();
 		} else {
 			$('.next-page').hide();
 		}
 
-		if (config.start - config.limit >= 0) {
+		if (config.start * config.limit >= 0) {
 			$('.prev-page').show();
 		}
       }
@@ -416,11 +415,12 @@ $('.rem_filter').live('click', function() {
 	view.draw_paging_controls();
 });
 
-// The next arrow is clicked. Adjust the paging values in config,
-// ask LibraryCloud for some new results, and redraw
+    
+// The next arrow is clicked.
 $('.next-page').live('click', function() {
-	if (config.start + config.limit <= library_cloud.lc_results.num_found) {
-		config.start = config.start + config.limit;
+	if (config.start * config.limit <= library_cloud.lc_results.num_found) {
+        //the config.start attribute gets used as the startPage value for the API in cloud.php.  All we need is to "flip" the page.
+		config.start = config.start + 1;
 	}
 
 	library_cloud.get_results();
@@ -433,8 +433,8 @@ $('.next-page').live('click', function() {
 // ask LibraryCloud for some new results, and redraw
 $('.prev-page').live('click', function() {
 
-	if (config.start - config.limit >= 0) {
-		config.start = config.start - config.limit;
+	if (config.start * config.limit >= 0) {
+		config.start = config.start - 1;
 	}
 
 	library_cloud.get_results();
@@ -590,9 +590,6 @@ Handlebars.registerHelper("stripes", function(array, even, odd, fn, elseFn) {
 
     // return the finished buffer
     return buffer;
-  }
-  else {
-    return elseFn();
   }
 });
 

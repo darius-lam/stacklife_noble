@@ -11,6 +11,7 @@
   $search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
 
+
   //$url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset&sort=$sort";
   $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
   //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=asdf&count=25&startPage=0";
@@ -181,12 +182,14 @@
     }
   }
 
-  $last = $offset + 10;
+  //$last = $offset + 10;
+    $last = $offset;
 
     header('Content-type: application/json');
 
   if(count($json) == 0 || $offset == -1) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}';
+    //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
   }
   else {
     //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . ', "facets": ' . json_encode($facets) . '}';

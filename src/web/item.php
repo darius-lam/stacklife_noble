@@ -123,7 +123,7 @@ $(document).ready(function() {
   <script id="item-template" type="text/x-handlebars-template">
   <div id="itemData">
     <h1 class="home-stack">
-      {{title}}{{#if sub_title}} : {{sub_title}}{{/if}}
+      {{title}}{{#if sub_title}} {{sub_title}}{{/if}}
     </h1>
     <div id="creator_container">
     {{{creators}}}
