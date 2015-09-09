@@ -251,6 +251,7 @@ var library_cloud = (function () {
           };
         }
         else {
+            console.log(config);
           $.ajax({
                   // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
                   url: config.lc_url + '?' + config.get_query_string(),

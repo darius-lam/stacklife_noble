@@ -82,12 +82,18 @@
 
     if (!empty($item->titleInfo->title)) {
         $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
+        if(!empty($item->titleInfo->subTitle)){
+            $title = $title . ": " . $item->titleInfo->subTitle;
+        }
 
     }else if (!empty($item->titleInfo[0]->title)){
         $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
 
         if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
             $title = ($item->titleInfo[0]->nonSort) . $title;
+        }
+        if(!empty($item->titleInfo[0]->subTitle)){
+            $title = $title . ": " . $item->titleInfo[0]->subTitle;
         }
     }
 

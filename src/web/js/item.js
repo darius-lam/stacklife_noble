@@ -494,16 +494,16 @@ function match_values(data){
     
     this_details = data.mods;
     
-    
+    sub_title="";
     if(this_details.titleInfo instanceof Array){
         title_nf = this_details.titleInfo[0].title;
         if(this_details.titleInfo[0].subTitle){
-            this_details.sub_title = this_details.titleInfo[0].subTitle;
+            sub_title = this_details.titleInfo[0].subTitle;
         }
     }else{
         title_nf = this_details.titleInfo.title;
         if(this_details.titleInfo.subTitle){
-            this_details.sub_title = this_details.titleInfo.subTitle;
+            sub_title = this_details.titleInfo.subTitle;
         }
     }
     this_details.title = title_nf;
@@ -511,6 +511,11 @@ function match_values(data){
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
     this_details.title = title_nf.replace(/\//g,"");
+    
+    //append subtitle to title
+    this_details.title = this_details.title + sub_title;
+    
+    console.log(this_details.title);
     place = this_details.originInfo.place;
     if(place instanceof Array){
         place.forEach(function(entry){
