@@ -53,7 +53,7 @@
   //check to see if mods is an array, if not we make it one so it works with our for each loop
   if(is_array($book_data->mods)){
       $items = $book_data->mods;
-  }else{
+  }else if(!empty($book_data->mods)){
       $items = array($book_data->mods);
   }
   
@@ -190,7 +190,6 @@
 
   //$last = $offset + 10;
     $last = $offset;
-
     header('Content-type: application/json');
 
   if(count($json) == 0 || $offset == -1) {

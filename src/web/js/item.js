@@ -242,8 +242,8 @@ $(document).ready(function() {
 
     $("#toc").html('');
     if(item_details.tableOfContents) {
-        toc = item_details.tableOfContents;
-        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />').replace(/[\/]/g, '<br />').replace(/[\\]/g, '<br />');
+        toc = '<br /> ' + item_details.tableOfContents;
+        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />').replace(/;/g, '<br />').replace(/[\/]/g, '<br />').replace(/[\\]/g, '<br />');
         if(toc) {
             $("#toc").html('<p>' + toc + '</p>')
             $(".toc-title").show();
@@ -256,7 +256,7 @@ $(document).ready(function() {
         
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
 		if (isbn) {
-			$.ajax({
+			/**$.ajax({
 				type: "GET",
 				url: slurl,
 				data: "isbn=" + isbn + "&function=check_amazon",
@@ -268,11 +268,13 @@ $(document).ready(function() {
 						$('.buy').hide();
 					}
 				}
-		});
+		  });**/
+            
+         $('#amzn').attr('href', 'http://www.amazon.com/dp/' + isbn);
 		} else {
 			$('.buy').hide();
 		}
-        
+         
     if(item_details.this_button) {
         $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
     }   
@@ -396,7 +398,6 @@ function drawTagNeighborhood(){
 function ProcessGBSBookInfo(booksInfo) {
 	$('.button-google').hide();
 	$('.button-google-disabled').show();
-    console.log(booksInfo);
 	for (isbn in booksInfo) {
         
 		var GBSParts = isbn.split(':');
@@ -462,7 +463,6 @@ function left_pad(value) {
 function match_values(data){
     
     var subject = [];
-    console.log(data);
     
     //-------------------------------
     //get a list of subjects from the book
@@ -513,7 +513,7 @@ function match_values(data){
     this_details.title = title_nf.replace(/\//g,"");
     
     //append subtitle to title
-    this_details.title = this_details.title + sub_title;
+    this_details.title = this_details.title + " " + sub_title;
     
     console.log(this_details.title);
     place = this_details.originInfo.place;
@@ -535,6 +535,9 @@ function match_values(data){
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
 
+    //add noblenet permalink support
+    this_details.noble_link = "http://evergreen.noblenet.org/eg/opac/record/" + this_details.recordInfo.recordIdentifier;
+    
     if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
     }else{

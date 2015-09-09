@@ -13,12 +13,12 @@ $(document).ready(function() {
     var keywords = ['artificial intelligence', 'descartes', 'sartre', 'cognition', 'psychology'];
     
     word = keywords[getRandomInt(0,keywords.length-1)];
-  $('#landing-stack').stackView({url: 'translators/cloud.php', query: word, ribbon: word});
+  /**$('#landing-stack').stackView({url: 'translators/cloud.php', query: word, ribbon: word});**/
   
-  /**$('#landing-stack').stackView({
+  $('#landing-stack').stackView({
       url: 'js/awesome.json', 
       ribbon: 'Recent Awesome Returns'
-  });**/
+  });
 	
 	$('.stackview').css('height', stackheight);
 	

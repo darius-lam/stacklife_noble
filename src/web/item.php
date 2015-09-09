@@ -140,6 +140,7 @@ $(document).ready(function() {
       <li class="button-google-disabled"><a class="button-google-disabled" href="#viewerCanvas"><img src="<?php echo $www_root ?>/images/gbs_preview_disabled.png" /></a></li>
       <li class="button-google"><a id="gviewer" class="button-google" href="#viewerCanvas" style="display:none;"><img src="<?php echo $www_root ?>/images/gbs_preview.png" border="0" /></a></li>
       <li><a id="amzn" href="http://www.amazon.com/dp/{{isbn}}" target="_blank"><img class="buy" src="<?php echo $www_root ?>/images/amazon.png" alt="Amazon"/></a></li>
+      {{#if noble_link}}<li><a href="{{noble_link}}" target="_blank"><img src="<?php echo $www_root ?>/images/noble_small.jpg" alt="NobleNet" height="42"/></a></li>{{/if}}
       {{#if wp_url}}
        <li><a href="{{wp_url}}" target="_blank" ><img src="<?php echo $www_root ?>/images/wikipedia.png" /></a></li>
       {{/if}}
@@ -167,7 +168,7 @@ Your browser does not support the audio element.
     <div class="advanced-data-box slide-content" style="display:none;">
       <ul>
         <li class="advanced-isbn"><p>ISBN: {{isbn}}</p></li>
-        <li class="advanced-oclc"><p>OCLC: {{oclc}}</p></li>
+        {{#if oclc}}<li class="advanced-oclc"><p>OCLC: {{oclc}}</p></li>{{/if}}
         <li class="advanced-language"><p>Language: {{language}}</p></li>
       </ul>
     </div>
