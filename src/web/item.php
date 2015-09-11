@@ -123,7 +123,7 @@ $(document).ready(function() {
   <script id="item-template" type="text/x-handlebars-template">
   <div id="itemData">
     <h1 class="home-stack">
-      {{title}}{{#if sub_title}} {{sub_title}}{{/if}}
+      {{title}}{{#if sub_title}} {{sub_title}}{{/if}} {{#if electronic}}<img src="/images/lightning.png" alt="electronic resource" width="25"/>{{/if}}
     </h1>
     <div id="creator_container">
     {{{creators}}}
@@ -177,6 +177,7 @@ Your browser does not support the audio element.
     <div class="slide-content" style="display:none;">
       <div id="toc"></div>
     </div>
+    
     </div>
     <div id="all-rank" class="slide-more">
     <div id="shelfRankCalc" class="button-shelfRank">

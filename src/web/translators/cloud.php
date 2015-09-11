@@ -11,9 +11,12 @@
   $search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
 
-
-  //$url = "$LIBRARYCLOUD_URL?key=$LIBRARYCLOUD_KEY&filter=$search_type:$q&limit=$limit&start=$offset&sort=$sort";
-  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+ //check if our search_type is "recordId", because it uses a different link.
+  if($search_type == 'recordId'){
+    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$q";
+  }else{
+    $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+  }
   //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=asdf&count=25&startPage=0";
 
 
@@ -47,8 +50,12 @@
 
   $book_data = json_decode($j);
 
-
-  $hits = $book_data->totalResults;
+  //url that searches using recordId doesn't return totalResults field
+  if($search_type == 'recordId'){
+      $hits = 1;
+  }else{
+      $hits = $book_data->totalResults;
+  }
 
   //check to see if mods is an array, if not we make it one so it works with our for each loop
   if(is_array($book_data->mods)){
@@ -133,12 +140,8 @@
     //need to fix
     if($format == "print"){
         $format = "Book";
-    }else if($format == 'electronic'){
-        $format = 'Serial';
-    }else{
-        $format = "Book";
     }
-
+      
     $year = substr($year, 0, 4);
     //$format = str_replace(" ", "", $format);
 
@@ -174,8 +177,9 @@
                 $push = false;
                 $hits = $hits - 1;
             }else{
-                $id = $isbn;
-                $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                //$id = $isbn;
+                $id=$item->recordInfo->recordIdentifier;
+                $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
             }
         }
     }

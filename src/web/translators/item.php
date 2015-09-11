@@ -12,8 +12,11 @@
 
   global $NOBLE_URL;
 
-  $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
-  //$url = "$NOBLE_URL/title/?searchTerms=artificial+intelligence&count=1";
+  if($search_type == 'recordId'){
+    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$q";
+  }else{
+    $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+  }
 
   // Get facets and filters
   // TODO: This is ugly. Clean this stuff up.

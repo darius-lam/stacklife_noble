@@ -36,8 +36,10 @@
 global $NOBLE_URL;
 
 foreach($user_books as $id) {
-        
-    $url = "$NOBLE_URL/isbn/?searchTerms=$id&count=1";
+
+    
+    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$id";
+    
     //debug url
     //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/isbn/?searchTerms=0714815543&count=1";
     
@@ -159,8 +161,8 @@ foreach($user_books as $id) {
                     $push = false;
                     $hits = $hits - 1;
                 }else{
-                    $id = $isbn;
-                    $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                    $id=$item->recordInfo->recordIdentifier;
+                    $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
                 }
             }
         }

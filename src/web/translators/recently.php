@@ -12,7 +12,7 @@
     
 	foreach($user_books as $id) {
   
-        $url = "$NOBLE_URL/isbn/?searchTerms=$id&count=1";
+         $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$id";
 
         $contents = fetch_page($url);
 
@@ -133,8 +133,8 @@
                         $push = false;
                         $hits = $hits - 1;
                     }else{
-                        $id = $isbn;
-                        $link = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                        $id=$item->recordInfo->recordIdentifier;
+                        $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
                     }
                 }
             }

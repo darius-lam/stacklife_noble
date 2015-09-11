@@ -12,8 +12,8 @@
  ****************************/
 
 
-    /**$sl_home = dirname(dirname(dirname(__FILE__)));
-    require_once ($sl_home . '/etc/sl_ini.php');**/
+    /**$sl_home = dirname(dirname(dirname(__FILE__)));**/
+    require_once(__DIR__ . '/../../etc/sl_ini.php');
 
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -146,8 +146,9 @@
             //may run into errors with this regex.
             if(is_string($item->identifier[0])){
                 $isbn = preg_replace("/\s.*/","",$item->identifier[0]);
-                if($strlen($isbn) != 13 || strlen($isbn) != 10){
-                    $static_doc['link'] = $www_root . "/item/" . $title_link_friendly . '/' . $isbn;
+                if(strlen($isbn) != 13 || strlen($isbn) != 10){
+                    //test out using record identifier
+                    $static_doc['link'] = $www_root . "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
                     $static_docs[] = $static_doc;
                 }
             }

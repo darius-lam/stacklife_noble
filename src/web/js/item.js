@@ -12,11 +12,10 @@ $(document).ready(function() {
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : uid, search_type : 'isbn', start : '0', limit : '1'},
+  		data: {query : uid, search_type : 'recordId', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-            //UID is ISBN
-            console.log(uid);
+            //uid can either be ISBN or recordIdentifier!
             
             loc_call_num_sort_order = 10;
             
@@ -24,8 +23,6 @@ $(document).ready(function() {
   			uniform_id = data.mods.ut_id;
             
             var this_details = match_values(data);
-            
-            console.log(this_details);
             
 			if ( History.enabled ) {
 			  History.replaceState({data:this_details}, this_details.titleInfo.title, link);
@@ -101,8 +98,8 @@ $(document).ready(function() {
         //make sure that the title is not an array
         title = item_details.title
 		
-        uid = item_details.id_isbn;
-        
+        //uid = item_details.id_isbn;
+        uid = item_details.recordInfo.recordIdentifier;
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -123,7 +120,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "POST",
 			url: slurl,
-			data: "function=session_info&type=set&uid=" + item_details.id_isbn,
+			data: "function=session_info&type=set&uid=" + item_details.recordInfo.recordIdentifier,
 			async: false
 		});
 		recentlyviewed += '&recently[]=' + uid;
@@ -179,8 +176,7 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
         
-		var isbn = '';
-		isbn = item_details.id_isbn;
+		var isbn = item_details.id_isbn;
 
 		/**var oclc = '';
 		if (item_details.id_oclc) {
@@ -270,7 +266,7 @@ $(document).ready(function() {
 				}
 		  });**/
             
-         $('#amzn').attr('href', 'http://www.amazon.com/dp/' + isbn);
+         $('#amzn').attr('href', 'http://www.amazon.com/gp/search?index=books&linkCode=qs&keywords=' + isbn);
 		} else {
 			$('.buy').hide();
 		}
@@ -288,15 +284,15 @@ $(document).ready(function() {
 		$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : this_details.id, search_type : 'isbn', start : '0', limit : '1'},
+  		data: {query : this_details.id, search_type : 'recordId', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
               var this_details = match_values(data);
 			  //data.docs[0].this_button = this_button;
 			  if(History.enabled) {
-			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.id_isbn);
-			  }
-			  else {
+			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier);
+                 
+			  }else {
         	   draw_item_panel(this_details);
               }
         }
@@ -355,6 +351,7 @@ $(document).ready(function() {
 		},
 		submitHandler: function(form) {
 			var tags = encodeURIComponent($('#bookTags').attr('value'));
+            console.log("here: " + uid);
 			$.ajax({
 				type: "POST",
 				url: slurl,
@@ -506,16 +503,29 @@ function match_values(data){
             sub_title = this_details.titleInfo.subTitle;
         }
     }
-    this_details.title = title_nf;
-
+    
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
-    this_details.title = title_nf.replace(/\//g,"");
+    this_details.title = title_nf.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/\//g,"").replace(/[\[\]']+/g,"");
     
     //append subtitle to title
     this_details.title = this_details.title + " " + sub_title;
     
-    console.log(this_details.title);
+    
+    //test feature to render lightning logo in front of electronic resources
+    this_details.electronic=false;
+    if(this_details.genre){
+      if(this_details.genre instanceof Array){
+          this_details.genre.forEach(function(each){
+               if(each == 'Electronic books.'){
+                   this_details.electronic = true;
+               }
+          })
+        }else if(this_details.genre == 'Electronic books.'){
+            this_details.electronic = true;
+        }
+    }
+    
     place = this_details.originInfo.place;
     if(place instanceof Array){
         place.forEach(function(entry){
@@ -544,7 +554,7 @@ function match_values(data){
         //may run into errors with this regex.
         isbn = this_details.identifier[0].replace(/\s.*/,"");
         if(isbn.length == 10 || isbn.length == 13){
-          link = "../" + this_details.title_link_friendly + "/" + isbn;
+          link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;
           this_details.isbn = isbn;
           this_details.id_isbn = isbn;  
         }
