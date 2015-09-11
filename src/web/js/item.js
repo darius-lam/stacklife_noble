@@ -506,7 +506,8 @@ function match_values(data){
     
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
-    this_details.title = title_nf.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/\//g,"").replace(/[\[\]']+/g,"");
+    this_details.title = title_nf.replace(/\//g,"");
+    //.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/[\[\]']+/g,"")
     
     //append subtitle to title
     this_details.title = this_details.title + " " + sub_title;
