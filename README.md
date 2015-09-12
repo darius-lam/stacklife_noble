@@ -1,12 +1,8 @@
-#StackLife
+#StackLife @ Andover
 
-StackLife is a community-based wayfinding tool for navigating the vast resources of the combined Harvard Library System. It enables researchers, teachers, scholars, and students to find what they need and help others learn from them and their paths.
+StackLife is a community-based wayfinding tool for navigating the vast resources of the North of Boston Library Exchange catalog. It enables researchers, teachers, scholars, and students to find what they need and help others learn from them and their paths.
 
 ## Installation
-
-### LibraryCloud
-
-ShelLife is the frontend to LibraryCloud's backend. Install LibraryCloud.
 
 ### PHP and the web server
 
@@ -16,9 +12,7 @@ Serving up StackLife in [Apache](http://httpd.apache.org/) is probably the easie
 
 ### Installation
 
-Use the git clone command to get the latest version of StackLife:
-
-    git clone git://github.com/harvard-lil/stacklife.git
+Use the git clone command to get the latest version of StackLife
 
 ### Supporting MySQL database
 
@@ -31,13 +25,11 @@ The connection details for this database should be put into the configuration fi
 
 ### Typekit
 
-StackLife uses fonts from TypeKit.  The TypeKit embed code should be put into the configuration file.
-
-The font FF Tisa Web Pro should be assigned to the following selectors.
+StackLife uses fonts from TypeKit.  The TypeKit embed code should be put into includes/includes.php.  There are two font selector groups:
 
     #overlaynav, #results, #search_results_body, .button, .creator, .footer-content, .navigation, .tk-ff-tisa-web-pro, h1, h2, input, p 
 
-The font Futura PT should be assigned to the following selectors.
+and
 
     #all-rank, #recentlyviewed, #search_results_header, #welcome, #wrap, .addfield, .facet_heading, .facet_set, .hdr, .heading, .hits, .reload, .rem_filter, .removefield, .tk-futura-pt
 
@@ -57,18 +49,14 @@ We use a .htaccess file to make URLs pretty. Copy the example:
 
 ### Generating the landing page, static stack data
 
-The landing page stack is populated by data from the [Awesome Box](http://www.librarylab.law.harvard.edu/awesome/) API. We use a script to grab the 200 most recently awesomed items and massage them into a [StackView](http://librarylab.law.harvard.edu/blog/stack-view/) friendly static JSON object.
+The landing page stack is populated by data from the NOBLE API.
 
 To generate the static JSON file:
 
     cd src/batch
-    php -f retrieve_awesome_data.php
+    php -f retrieve_data.php
 
 If things bang off without issues you should now have src/web/js/awesome.js
-
-It's nice to see that list stay fresh. Cron it to run at 3:03 am:
-
-    3 3 * * * php -f /var/www/html/stacklife/src/batch/retrieve_awesome_data.php
 
 ## License
 

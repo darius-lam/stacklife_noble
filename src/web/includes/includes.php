@@ -15,6 +15,7 @@ echo <<<EOF
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
   <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
 
+<!-- Typekit Code goes here -->
 <script src="//use.typekit.net/izr1jbf.js"></script>
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
     

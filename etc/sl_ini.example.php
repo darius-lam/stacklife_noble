@@ -1,33 +1,20 @@
 <?php
 
-//WARNING:  DO NOT PUT PASSWORDS HERE.  THIS FILE WILL BE COMITTED.
-
 // The web root. The path that can be used when linking (to js, css, ...)
 // This should probably be something like http://localhost/
 //$www_root = "http://localhost/";
 $www_root = "http://localhost/";
 
 // Build version
-$version = "alpha 2.3";
+$version = "1.0";
 
 // DB connection details
 $hostName = "hostname";
 $userName = "username";
 $pw = "password";
 
-// Availability
-$AVAILABILITY_URL = "youravailurl";
-
-// LibraryCloud
-// Probably something like http://example.com/platform/v0.03/api/item/
-$NOBLE_URL = 'http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods';
-
-$TYPEKIT_CODE = 'yourtypekitcode';
-
-// Amazon
-$AMAZON_KEY = 'youramazonkey';
-$AMAZON_SECRET_KEY = 'youramazonsecretkey';
-$AMAZON_ASSOC_TAG = 'youramazonassoctag';
+// NOBLENET api url
+$NOBLE_URL = 'some_url';
 
 // One or more Google Analytics accounts
 $GOOGLE_ANALYTICS = array("UA-XXXXXX-X");
