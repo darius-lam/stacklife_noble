@@ -351,7 +351,6 @@ $(document).ready(function() {
 		},
 		submitHandler: function(form) {
 			var tags = encodeURIComponent($('#bookTags').attr('value'));
-            console.log("here: " + uid);
 			$.ajax({
 				type: "POST",
 				url: slurl,

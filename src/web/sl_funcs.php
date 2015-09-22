@@ -301,7 +301,7 @@ function connect_db() {
 	}
 	else
 	
-	mysql_select_db("sl");
+	mysql_select_db("stackview");
 	
 	// Following directive is essential for proper utf-8 resolution at the client
 	$set_utf8_query = "SET NAMES 'utf8'";
