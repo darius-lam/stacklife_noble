@@ -1,5 +1,6 @@
 etc/build/build.xml
 .env
 vendor/
+src/web/js/awesome.json
 etc/sl_ini.php
 .htaccess
