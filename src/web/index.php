@@ -44,7 +44,7 @@ EOF;
 			<br/>
 
 			<p class="text">Welcome to StackLife &#64; Andover, a new way to browse the NOBLE Library collection.</p>
-			<p class="text"><span class="cyan">This is a prototype.</span> We’re eager to hear from you about what works, what doesn’t, and what you’d like to see. Email <span class="cyan">help@stackandover.edu</span> with any feedback you have!</p>
+			<p class="text"><span class="cyan">This is a prototype.</span> We’re eager to hear from you about what works, what doesn’t, and what you’d like to see. Email <span class="cyan">dlam@andover.edu</span> with any feedback you have!</p>
 			<br/>
 
 
@@ -52,9 +52,10 @@ EOF;
 				<a href="<?php echo $www_root ?>/explainer.php" class="heading">How it works</a>
 			</div>
 			<br/>
-			<div class="about-button">
+			<!-- <div class="about-button">
 				<a href="<?php echo $www_root ?>/about" class="heading">About</a>
-			</div>
+			</div> -->
+			
 		</div><!--end-span4-negative-->
 
 </div><!--end container-->
