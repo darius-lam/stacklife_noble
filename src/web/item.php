@@ -123,7 +123,7 @@ $(document).ready(function() {
   <script id="item-template" type="text/x-handlebars-template">
   <div id="itemData">
     <h1 class="home-stack">
-      {{title}}{{#if sub_title}} {{sub_title}}{{/if}} {{#if electronic}}<img src="/images/lightning.png" alt="electronic resource" width="25"/>{{/if}}
+      {{title}}{{#if sub_title}} {{sub_title}}{{/if}} {{#if electronic}}<img src="<?php echo $www_root ?>/images/lightning.png" alt="electronic resource" width="25"/>{{/if}}
     </h1>
     <div id="creator_container">
     {{{creators}}}
