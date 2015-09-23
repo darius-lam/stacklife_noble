@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    
 	if (History.enabled) {
     History.Adapter.bind(window,'statechange',function(){
 		  var State = History.getState();
@@ -289,6 +290,9 @@ $(document).ready(function() {
   		success: function(data){
               var this_details = match_values(data);
 			  //data.docs[0].this_button = this_button;
+            
+              ga('send', 'event', 'stack-item', 'click', this_details.id + " : " + this_details.title);
+            
 			  if(History.enabled) {
 			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier);
                  
@@ -324,6 +328,7 @@ $(document).ready(function() {
 		$('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: $(this).text(), ribbon: $(this).text()});
+        ga('send', 'event', 'subject-button', 'click',encodeURI($(this).text()));
 	});
 
 	$('.wp_category-button').live('click',function() {
@@ -336,6 +341,7 @@ $(document).ready(function() {
 	  $('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
 		$('#fixedstack').stackView({url: www_root + '/translators/tag.php', query: $('span', this).text(), search_type: 'tag', ribbon: $('span', this).text()});
+        ga('send','event','tag-button','create',encodeURI($('span', this).text()));
 	});
 
     //
