@@ -29,7 +29,7 @@ loc_call_num_sort_order = '';
 anchor_subject = '',
 uniform_id = '',
 uniform_count = '',
-uid = '0465007864',
+uid = '2241578',
 title = '',
 stackheight = $(window).height();
 
@@ -139,7 +139,7 @@ $(document).ready(function() {
 }
 
 .note5 {
-	margin:-85px 0 0 130px;
+	margin:-110px 0 0 170px;
 	-webkit-transform: rotate(-1deg); 
 	-moz-transform: rotate(-1deg); 
 	-o-transform: rotate(-1deg);
@@ -257,16 +257,16 @@ $(document).ready(function() {
     </div>
     <img class="cover-image" src="http://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg" />
     	<div class="post-it note5">
-      		<p>Go to the item&apos;s entry in Hollis, or find it in Google Books or Amazon</p>
+      		<p>Go to the item&apos;s entry in Noblenet, or find it in Google Books or Amazon</p>
       	</div>
     <ul class="access">
-      <li><a href="http://holliscatalog.harvard.edu/?itemid=|library/m/aleph|{{id_inst}}" target="_blank">HOLLIS</a></li>
       {{#if url}}
       <li><a href="{{url}}">Online Access</a></li>
       {{/if}}
       <li class="button-google-disabled"><a class="button-google-disabled" href="#viewerCanvas"><img src="<?php echo $www_root ?>/images/gbs_preview_disabled.png" /></a></li>
       <li class="button-google"><a id="gviewer" class="button-google" href="#viewerCanvas" style="display:none;"><img src="<?php echo $www_root ?>/images/gbs_preview.png" border="0" /></a></li>
-      <li><a id="amzn" href="http://www.amazon.com/dp/{{isbn}}" target="_blank"><img class="buy" src="<?php echo $www_root ?>/images/amazon.png" alt="Amazon"/></a></li>   
+      <li><a id="amzn" href="http://www.amazon.com/dp/{{isbn}}" target="_blank"><img class="buy" src="<?php echo $www_root ?>/images/amazon.png" alt="Amazon"/></a></li>
+      <li><a href="http://evergreen.noblenet.org/eg/opac/record/{{id}}" target="_blank"><img src="<?php echo $www_root ?>/images/noble_small.jpg" alt="NobleNet" height="42"/></a></li>
       {{#if wp_url}}          	
        <li><a href="{{wp_url}}" target="_blank" ><img src="<?php echo $www_root ?>/images/wikipedia.png" /></a></li>
       {{/if}}
@@ -274,10 +274,10 @@ $(document).ready(function() {
      
     </ul>
 
-		<div id="availability-panel"></div>
+		<!-- <div id="availability-panel"></div>
 	    <div class="post-it note6">
-      		<p>Check availability across Harvard libraries</p>
-      	</div>	    	
+      		<p>Check availability across libraries in NOBLE</p>
+      	</div>	-->    	
     <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}}, {{publisher}}{{/if}}{{#if pub_date}}, {{pub_date}}{{/if}}</h3>
     
     <h3 class="clickable advanced-data slide-more">Advanced Bibliographic Data<span class="arrow"></span></h3>
@@ -290,16 +290,18 @@ $(document).ready(function() {
       </ul>
     </div>
     
-
+    <!--
     	    <div class="post-it note7">
-      		<p>StackScore represents community usage, 1 - 100</p>
-      	</div>
+      		    <p>StackScore represents community usage, 1 - 100</p>
+      	    </div>
+    -->
     <h3 class="clickable slide-more toc-title">Table of Contents<span class="arrow"></span></h3>
     <div class="slide-content" style="display:none;">
       <div id="toc"></div>
     </div>
     </div>
     
+    <!--
     <div id="all-rank">	            
     <div id="shelfRankCalc" class="button-shelfRank">
       <span class="unpack">StackScore</span>

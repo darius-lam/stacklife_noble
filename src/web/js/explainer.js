@@ -5,7 +5,7 @@ $(document).ready(function() {
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : uid, search_type : 'isbn', start : '0', limit : '1'},
+  		data: {query : uid, search_type : 'recordId', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
   			
@@ -392,34 +392,73 @@ function left_pad(value) {
 function match_values(data){
     
     var subject = [];
+    
+    //-------------------------------
+    //get a list of subjects from the book
     if(data.mods.subject instanceof Array) {
         anchor_subject = data.mods.subject[0].topic;
 
         data.mods.subject.forEach(function(item){
-            subject.push(item.topic);
+            if(item.topic){
+                if(item.topic instanceof Array){
+                    item.topic.forEach(function(subtop){
+                        subject.push(subtop);
+                    })
+                }else{
+                    subject.push(item.topic);
+                }
+            }
+            
         })
 
         if(anchor_subject instanceof Array){
             anchor_subject = anchor_subject[0];   
         }
     }else if(data.mods.subject instanceof Object){
-        if(anchor_subject === '') {
-            anchor_subject = data.mods.subject.topic;
-        }
+        anchor_subject = data.mods.subject.topic;
         subject = data.mods.subject.topic;
     }
-    this_details = data.mods;
+    //------------------------------------------
 
+    
+    this_details = data.mods;
+    
+    sub_title="";
     if(this_details.titleInfo instanceof Array){
         title_nf = this_details.titleInfo[0].title;
+        if(this_details.titleInfo[0].subTitle){
+            sub_title = this_details.titleInfo[0].subTitle;
+        }
     }else{
         title_nf = this_details.titleInfo.title;
+        if(this_details.titleInfo.subTitle){
+            sub_title = this_details.titleInfo.subTitle;
+        }
     }
-    this_details.title = title_nf;
-
+    
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
     this_details.title = title_nf.replace(/\//g,"");
+    //.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/[\[\]']+/g,"")
+    
+    //append subtitle to title
+    this_details.title = this_details.title + " " + sub_title;
+    
+    
+    //test feature to render lightning logo in front of electronic resources
+    this_details.electronic=false;
+    if(this_details.genre){
+      if(this_details.genre instanceof Array){
+          this_details.genre.forEach(function(each){
+               if(each == 'Electronic books.'){
+                   this_details.electronic = true;
+               }
+          })
+        }else if(this_details.genre == 'Electronic books.'){
+            this_details.electronic = true;
+        }
+    }
+    
     place = this_details.originInfo.place;
     if(place instanceof Array){
         place.forEach(function(entry){
@@ -439,15 +478,18 @@ function match_values(data){
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
 
+    //add noblenet permalink support
+    this_details.noble_link = "http://evergreen.noblenet.org/eg/opac/record/" + this_details.recordInfo.recordIdentifier;
+    
     if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
     }else{
         //may run into errors with this regex.
         isbn = this_details.identifier[0].replace(/\s.*/,"");
         if(isbn.length == 10 || isbn.length == 13){
-          link = "../" + this_details.title_link_friendly + "/" + isbn;
+          link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;
           this_details.isbn = isbn;
-          this_details.id_isbn = isbn;  
+          this_details.id = this_details.recordInfo.recordIdentifier;  
         }
     }
     return this_details;

@@ -130,9 +130,6 @@ $(document).ready(function() {
     </div>
     <img class="cover-image" src="http://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg" />
     <ul class="access">
-    
-      <!-- Fix this down here -->
-      <!--<li><a href="http://id.lib.harvard.edu/aleph/{{id_inst}}/catalog" target="_blank">HOLLIS</a></li>-->
       
       {{#if url}}
       <li><a href="{{url}}">Online Access</a></li>
@@ -179,12 +176,15 @@ Your browser does not support the audio element.
     </div>
     
     </div>
+    
+    <!--
     <div id="all-rank" class="slide-more">
     <div id="shelfRankCalc" class="button-shelfRank">
       <span class="unpack">StackScore</span>
       <span class="shelfRank">{{shelfrank}}</span>
     </div><!--end shelfRankCalc-->
   </div><!--end all-rank-->
+  
   <div id="rank-math" class="slide-content" style="display:none;">
     <ul>
       <li><p>Faculty checkouts: {{score_checkouts_fac}}</p></li>

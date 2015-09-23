@@ -98,7 +98,7 @@ $(document).ready(function() {
         //make sure that the title is not an array
         title = item_details.title
 		
-        //uid = item_details.id_isbn;
+        //uid = item_details.isbn;
         uid = item_details.recordInfo.recordIdentifier;
 
 		// update our window title
@@ -176,7 +176,7 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
         
-		var isbn = item_details.id_isbn;
+		var isbn = item_details.isbn;
 
 		/**var oclc = '';
 		if (item_details.id_oclc) {
@@ -556,7 +556,7 @@ function match_values(data){
         if(isbn.length == 10 || isbn.length == 13){
           link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;
           this_details.isbn = isbn;
-          this_details.id_isbn = isbn;  
+          this_details.id = this_details.recordInfo.recordIdentifier;  
         }
     }
     return this_details;
