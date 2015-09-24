@@ -71,7 +71,7 @@
     $title = '';
     $author = '';
 
-    $shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"PANO");
+    $shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"NOBLE");
      // $shelfrank = rand(0,100);
 
     if(is_array($item->name)){
