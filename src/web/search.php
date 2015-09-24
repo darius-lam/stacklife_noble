@@ -89,8 +89,8 @@ var www_root = '<?php echo $www_root ?>';
     		        <th id="title_sort" class="sort_heading">Title</th>
     		        <th id="creator" class="sort_heading">Author</th>
     		        <th id="pub_date" class="sort_heading">Year</th>
-    		        <th id="shelfrank" class="sort_heading sortable score">StackScore<span class="{{#get_sort_direction sort_direction}}{{this}}{{/get_sort_direction}}"></span></th>
-    		        <th></th>
+    		        <!-- <th id="shelfrank" class="sort_heading sortable score">StackScore<span class="{{#get_sort_direction sort_direction}}{{this}}{{/get_sort_direction}}"></span></th>
+    		        <th></th> -->
     		    </tr>
     		</thead>
     		<tbody id="search_results_body">
@@ -103,7 +103,7 @@ var www_root = '<?php echo $www_root ?>';
     	            {{/first}}
     	            </td>
                     <td class="year-column">{{pub_date}}</td>
-                    <td><span class="results-score color{{#heat shelfrank}}{{this}}{{/heat}}">{{#left_pad shelfrank}}{{this}}{{/left_pad}}</span></td>
+                    <!-- <td><span class="results-score color{{#heat shelfrank}}{{this}}{{/heat}}">{{#left_pad shelfrank}}{{this}}{{/left_pad}}</span></td> -->
     	        </tr>
     	    {{/stripes}}
     		</tbody>

@@ -175,6 +175,12 @@ Your browser does not support the audio element.
       <div id="toc"></div>
     </div>
     
+    
+    <h3 class="clickable slide-more summary-title">Summary<span class="arrow"></span></h3>
+    <div class="slide-content" style="display:none;">
+      <div id="summary"></div>
+    </div>
+    
     </div>
     
     <!--

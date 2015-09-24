@@ -249,6 +249,18 @@ $(document).ready(function() {
         $(".toc-title").hide();
     }
         
+        
+    //add summary or abstract if available
+    $("#summary").html('');
+    if(item_details.abstract) {
+        summary = item_details.abstract;
+        $("#summary").html('<p>' + summary + '</p>')
+        $(".summary-title").show();
+    } else {
+        $(".summary-title").hide();
+    }
+        
+        
         //NEED TO ADD!!! 
         
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
@@ -516,7 +528,6 @@ function match_values(data){
     
     //append subtitle to title
     this_details.title = this_details.title + " " + sub_title;
-    
     
     //test feature to render lightning logo in front of electronic resources
     this_details.electronic=false;
