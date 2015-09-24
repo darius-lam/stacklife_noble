@@ -1,5 +1,5 @@
 <?php
-
+  require_once('/var/local/noble/circ/circ_counts.php');
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
 
   //gets the id "string" of the book.  Find more in .htaccess
@@ -71,8 +71,8 @@
     $title = '';
     $author = '';
 
-    $shelfrank = 35;
-
+    $shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"PANO");
+     // $shelfrank = rand(0,100);
 
     if(is_array($item->name)){
         foreach ($item->name as $name){
@@ -134,7 +134,6 @@
     }else{
         $year = intval($item->originInfo->dateIssued);
     }
-
 
     $format = $item->physicalDescription->form;
     //need to fix

@@ -1,5 +1,6 @@
 <?php	
 
+
 require_once(__DIR__ . '/../../etc/sl_ini.php');
 
 if(isset($_REQUEST['function']) && $_REQUEST['function'] != '')

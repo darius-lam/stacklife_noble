@@ -303,7 +303,7 @@ $(document).ready(function() {
               var this_details = match_values(data);
 			  //data.docs[0].this_button = this_button;
             
-              ga('send', 'event', 'stack-item', 'click', this_details.id + " : " + this_details.title);
+              ga('send', 'event', 'stack-item', 'click', this_details.recordInfo.recordIdentifier + " : " + this_details.title);
             
 			  if(History.enabled) {
 			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier);
@@ -573,8 +573,8 @@ function match_values(data){
         if(isbn.length == 10 || isbn.length == 13){
           link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;
           this_details.isbn = isbn;
-          this_details.id = this_details.recordInfo.recordIdentifier;  
         }
+        this_details.id = this_details.recordInfo.recordIdentifier; 
     }
     return this_details;
 }
