@@ -1,5 +1,5 @@
 <?php
-  require_once('/var/local/noble/circ/circ_counts.php');
+  //require_once('/var/local/noble/circ/circ_counts.php');
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
 
   //gets the id "string" of the book.  Find more in .htaccess
@@ -71,8 +71,8 @@
     $title = '';
     $author = '';
 
-    $shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"NOBLE");
-     // $shelfrank = rand(0,100);
+    //$shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"NOBLE")[$item->recordInfo->recordIdentifier];
+      $shelfrank = 25;
 
     if(is_array($item->name)){
         foreach ($item->name as $name){
