@@ -72,8 +72,9 @@
     $author = '';
 
     //$shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"NOBLE")[$item->recordInfo->recordIdentifier];
-      $shelfrank = 25;
-
+      $shelfrank = 35;
+      //$shelfrank = rand(0,100);
+      
     if(is_array($item->name)){
         foreach ($item->name as $name){
             array_push($creator,$name->namePart);

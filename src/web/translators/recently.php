@@ -12,7 +12,7 @@
     
 	foreach($user_books as $id) {
   
-         $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$id";
+            $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$id";
 
         $contents = fetch_page($url);
 
@@ -146,8 +146,8 @@
             }
         }
     }
-    
-  if(count($json) == 0 || $start > 0) {
+
+  if(count($json) == 0 || $start > 1) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}'; 
   }
   else {
