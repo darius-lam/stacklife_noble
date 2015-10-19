@@ -42,7 +42,7 @@ EOF;
 		<div class="row group">
 			<div class="span5 offset2 text-padding">		
 				<div class="call-out">
-					<p class="black">StackLife lets you browse all of the items in Harvard’s 73 libraries and Book Depository as if they were on a single shelf.</p>
+					<p class="black">StackLife lets you browse all of the items in NOBLE's 28 libraries as if they were on a single shelf.</p>
 				
 					<p class="black">It’s built on a few core ideas:</p>
 				

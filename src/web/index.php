@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>StackLife &#64; Andover</title>
+<title>StackLife &#64; NOBLE</title>
 <?php
 include_once('includes/includes.php');
 echo <<<EOF
@@ -43,7 +43,7 @@ EOF;
 			<a href="<?php echo $www_root?>/search?advanced=true" class="button advanced-search2">Advanced Search</a>
 			<br/>
 
-			<p class="text">Welcome to StackLife &#64; Andover, a new way to browse the NOBLE Library collection.</p>
+			<p class="text">Welcome to StackLife &#64; NOBLE, a new way to browse the library resource of the North of Boston Library Exchange.</p>
 			<p class="text"><span class="cyan">This is a prototype.</span> We’re eager to hear from you about what works, what doesn’t, and what you’d like to see. Email <span class="cyan">dlam@andover.edu</span> with any feedback you have!</p>
 			<br/>
 
@@ -52,9 +52,9 @@ EOF;
 				<a href="<?php echo $www_root ?>/explainer.php" class="heading">How it works</a>
 			</div>
 			<br/>
-			<!-- <div class="about-button">
+			<div class="about-button">
 				<a href="<?php echo $www_root ?>/about" class="heading">About</a>
-			</div> -->
+			</div>
 			
 		</div><!--end-span4-negative-->
 

@@ -1,4 +1,4 @@
-#StackLife @ Andover
+#StackLife @ NOBLE
 
 StackLife is a community-based wayfinding tool for navigating the vast resources of the North of Boston Library Exchange catalog. It enables researchers, teachers, scholars, and students to find what they need and help others learn from them and their paths.
 
