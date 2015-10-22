@@ -51,18 +51,20 @@ EOF;
 					<p class="indent"><span class="dark">2. Every book has many contexts</span></br>
 					StackLife lets you switch contexts just by clicking. The default stack shows the item in its primary subject classification. But since most works have been classified under more than one subject heading, you can click on any of those headings and see it grouped with those neighbors.</p>
 					
-					<div class="about-button">
+					<!-- <div class="about-button">
 						<a href="http://librarylab.law.harvard.edu/" class="heading"><img class="stamp" src="images/liblabstampmed.png">
 						Made by The Harvard Library Innovation Lab</a>
-					</div>
+					</div> -->
 				</div><!--end call-out-->
 			</div>
 			
-			<div class="span5 video text-padding">		
-				<iframe src="http://player.vimeo.com/video/55894472?title=0&amp;byline=0&amp;portrait=0" width="500" height="334" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe> 
+			 <div class="span5 video text-padding">		
+			<!--	<iframe src="http://player.vimeo.com/video/55894472?title=0&amp;byline=0&amp;portrait=0" width="500" height="334" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe> -->
 				<div class="call-out">
-					<p class="indent"><span class="dark">3. Every book has some community relevance</span></br> 
-					StackLife heat-maps books to reflect how often they’ve been checked out, put on reserve, called back early from a loan, etc. Also, it’s not just books. StackLife lets you browse among all of Hollis’ catalog, including DVDs and CDs. </p>
+                <!-- <p class="indent"><span class="dark">3. Every book has some community relevance</span></br> 
+					StackLife heat-maps books to reflect how often they’ve been checked out, put on reserve, called back early from a loan, etc. Also, it’s not just books. StackLife lets you browse among all of Hollis’ catalog, including DVDs and CDs. </p> -->
+					<p class="indent"><span class="dark">3. Every book is visual</span></br> 
+					StackLife visualizes library materials as a virtual stack, bringing serendipity back into library searches.  </p>
 
 					<br/>
 					
@@ -75,7 +77,7 @@ EOF;
 					</div>
 					<br/>
 					<div class="about-button">
-						<a href="https://github.com/harvard-lil/stacklife" class="heading">Download on GitHub</a>
+						<a target="_blank" href="https://github.com/Lamikins/stacklife_noble" class="heading">Download on GitHub</a>
 					</div>
 				</div><!--end call-out-->
 			</div>

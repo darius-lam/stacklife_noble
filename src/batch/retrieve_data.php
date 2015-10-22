@@ -20,7 +20,7 @@
         CURLOPT_RETURNTRANSFER => 2,
         /**CURLOPT_URL => "http://librarylab.law.harvard.edu/awesome/api/item/recently-awesome?limit=200"
         We may want to randomize a search query here, since Noblenet does not support "recently awesomed" data**/
-        CURLOPT_URL => "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=artificial+intelligence&count=20"
+        CURLOPT_URL => "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=dream+hypothesis&count=20"
     ));
     $response = curl_exec($curl);
     curl_close($curl);
