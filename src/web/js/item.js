@@ -303,6 +303,9 @@ $(document).ready(function() {
   		async: false,
   		success: function(data){
               var this_details = match_values(data);
+             if(isPublic){
+                ga('send', 'pageview', link);
+             }
 			  //data.docs[0].this_button = this_button;
 			  if(History.enabled) {
 			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier);
@@ -322,6 +325,9 @@ $(document).ready(function() {
 	  $(this).addClass('selected-button');
 		var compare = $.trim($(this).attr('id'));
 		if(compare === 'recentlyviewed') {
+            if(isPublic){
+                ga('send', 'pageview', "Recently Viewed");
+            }
 			$('#fixedstack').stackView({url: www_root + '/translators/recently.php?' + recentlyviewed, search_type: 'recently', ribbon: 'You recently viewed these'});
 		}
 		else if(compare === 'callview') {
@@ -336,6 +342,10 @@ $(document).ready(function() {
 	});
 
 	$('.subject-button').live('click',function() {
+        if(isPublic){
+            ga('send', 'pageview', "Subject: " + $(this).text());
+        }
+        
 		$('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: $(this).text(), ribbon: $(this).text()});
@@ -348,6 +358,9 @@ $(document).ready(function() {
 	});
 
 	$('.tag-button').live('click', function() {
+        if(isPublic){
+            ga('send', 'pageview', "Tag: " + $(this).text());
+        }
 	  $('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
 		$('#fixedstack').stackView({url: www_root + '/translators/tag.php', query: $('span', this).text(), search_type: 'tag', ribbon: $('span', this).text()});
