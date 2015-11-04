@@ -75,7 +75,8 @@ var www_root = '<?php echo $www_root ?>';
     
     <script id="result-hits-container-template" type="text/x-handlebars-template">
             {{#if num_found}}
-    	        <p class="hits">Showing <span class="orange">{{start}}</span> to <span class="orange">{{showing}}</span> of <span class="orange">{{#commify-number num_found}}{{this}}{{/commify-number}}</span> results for &ldquo;{{query}}&rdquo;</p>
+    	        <!-- <p class="hits">Showing <span class="orange">{{start}}</span> to <span class="orange">{{showing}}</span> of <span class="orange">{{#commify-number num_found}}{{this}}{{/commify-number}}</span> results for &ldquo;{{query}}&rdquo;</p> -->
+                <p class="hits"><span class="orange">{{#commify-number num_found}}{{this}}{{/commify-number}}</span> results for &ldquo;{{query}}&rdquo;</p>
     	    {{else}}
     	        <span class="apology">We've got nothing. Sorry. It could be us, but perhaps try an <a id="inline" href="<?php echo $www_root ?>/search?advanced=true" class="button advanced-search">advanced search</a>?</span>
     	    {{/if}}
