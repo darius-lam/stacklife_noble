@@ -50,11 +50,6 @@ EOF;
 				
 					<p class="indent"><span class="dark">2. Every book has many contexts</span></br>
 					StackLife lets you switch contexts just by clicking. The default stack shows the item in its primary subject classification. But since most works have been classified under more than one subject heading, you can click on any of those headings and see it grouped with those neighbors.</p>
-					
-					<!-- <div class="about-button">
-						<a href="http://librarylab.law.harvard.edu/" class="heading"><img class="stamp" src="images/liblabstampmed.png">
-						Made by The Harvard Library Innovation Lab</a>
-					</div> -->
 				</div><!--end call-out-->
 			</div>
 			
@@ -68,6 +63,11 @@ EOF;
 
 					<br/>
 					
+					<div class="">
+						<p style="text-align:center">Developed at <a href="http://www.andover.edu/Pages/default.aspx">Phillips Academy Andover</a></p>
+						<img class="center" src="images/pa_logo.png" style="width:45%">
+					</div>
+					<br>
 					<div class="about-button">
 						<a href="<?php echo $www_root ?>/explainer.php" class="heading">How it works</a>
 					</div>
