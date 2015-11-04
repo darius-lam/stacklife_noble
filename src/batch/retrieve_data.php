@@ -1,9 +1,4 @@
 <?php
-    $live = false;
-    if($live){
-      require_once('/var/local/noble/circ/circ_counts.php');  
-    }
-
 /****************************
  * This script hits the Awesome API to retrieve the n recently awesomed items.
  * We grab the hollis ID of each awesome item and use it to get details of the item from the
@@ -18,6 +13,10 @@
 
     /**$sl_home = dirname(dirname(dirname(__FILE__)));**/
     require_once(__DIR__ . '/../../etc/sl_ini.php');
+    
+    if($live){
+      require_once('/var/local/noble/circ/circ_counts.php');  
+    }
 
     $curl = curl_init();
     curl_setopt_array($curl, array(

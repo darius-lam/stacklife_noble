@@ -1,10 +1,10 @@
 <?php
-  $live = false;
+
+  require_once (__DIR__ .  '/../../../etc/sl_ini.php');
+
   if($live){
     require_once('/var/local/noble/circ/circ_counts.php');
   }
-
-  require_once (__DIR__ .  '/../../../etc/sl_ini.php');
 
   //gets the id "string" of the book.  Find more in .htaccess
   $q = $_GET['query'];

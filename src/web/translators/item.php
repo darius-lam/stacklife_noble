@@ -1,11 +1,12 @@
 <?php
-    $live = false;
+
+    error_reporting(E_ALL ^ E_NOTICE);
+  require_once (__DIR__ .  '/../../../etc/sl_ini.php');
+
     if($live){
         require_once('/var/local/noble/circ/circ_counts.php');
     }
 
-    error_reporting(E_ALL ^ E_NOTICE);
-  require_once (__DIR__ .  '/../../../etc/sl_ini.php');
   //Queries come from ajax calls in item.js
   $q = $_GET['query'];
   //$q = urlencode($q);
