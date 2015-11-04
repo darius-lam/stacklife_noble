@@ -1,4 +1,5 @@
 <?php
+//require_once('/var/local/noble/circ/circ_counts.php');
 
 /****************************
  * This script hits the Awesome API to retrieve the n recently awesomed items.
@@ -97,15 +98,24 @@
         $static_doc['measurement_height_numeric'] = $height_cm;
         
         //--------------
-        //Get shelfrank
+        //Shelfrank
         //--------------
         
-        if (property_exists($item, 'shelfrank') && !empty($item->shelfrank)) {
-            $static_doc['shelfrank'] = $item->shelfrank;
-        }
-
+        $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
+      
+      $shelfrank = 1;
+      /**foreach($libs as $library){
+          $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
+      } 
+      if($shelfrank >= 400){
+        $shelfrank = 100;
+      }else{
+        $shelfrank = floor($shelfrank/4);
+      }
+      **/
+        
         //set shelfrank to random number for now
-        $static_doc['shelfrank'] = 35;
+        $static_doc['shelfrank'] = $shelfrank;
 
         
         if(is_array($item->originInfo->dateIssued)){

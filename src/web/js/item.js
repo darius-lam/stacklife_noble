@@ -573,7 +573,7 @@ function match_values(data){
     if(this_details.shelfrank >= 400){
         this_details.shelfrank=100;
     }else{
-        this_details.shelfrank = this_details.shelfrank/4;
+        this_details.shelfrank = Math.floor(this_details.shelfrank/4);
     }
     
     this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");

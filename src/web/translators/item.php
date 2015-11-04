@@ -51,7 +51,7 @@
       $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->mods->recordInfo->recordIdentifier),$library)[$item->mods->recordInfo->recordIdentifier];
   } **/
 
-  $xml->mods->shelfrank = 100;
+  $xml->mods->shelfrank = $shelfrank;
   $json = json_encode($xml); 
   echo $json;
 
