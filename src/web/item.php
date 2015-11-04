@@ -193,7 +193,7 @@ Your browser does not support the audio element.
   
   <div id="rank-math" class="slide-content" style="display:none;">
     <ul>
-      <li><p>Circulation Coubnt: {{circ_count}}</p></li>
+      <li><p>Circulation Count: {{circ_count}}</p></li>
     </ul>
   </div>
 

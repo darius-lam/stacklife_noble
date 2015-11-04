@@ -80,7 +80,13 @@
       /** $shelfrank = 1;
       foreach($libs as $library){
           $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
-      } **/
+      } 
+      if($shelfrank >= 400){
+        $shelfrank = 100;
+      }else{
+        $shelfrank = floor($shelfrank/4);
+      }
+      **/
       
       $shelfrank = 30;
       //$shelfrank = rand(1,100);
