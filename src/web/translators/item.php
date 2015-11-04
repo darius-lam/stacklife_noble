@@ -1,5 +1,9 @@
 <?php
-    //require_once('/var/local/noble/circ/circ_counts.php');
+    $live = false;
+    if($live){
+        require_once('/var/local/noble/circ/circ_counts.php');
+    }
+
     error_reporting(E_ALL ^ E_NOTICE);
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
   //Queries come from ajax calls in item.js
@@ -45,11 +49,12 @@
   $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
     $j = json_encode($xml);
     $item = json_decode($j);
-
-  /** $shelfrank = 1;
-  foreach($libs as $library){
-      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->mods->recordInfo->recordIdentifier),$library)[$item->mods->recordInfo->recordIdentifier];
-  } **/
+    $shelfrank = 1;
+      if($live){
+          foreach($libs as $library){
+              $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->mods->recordInfo->recordIdentifier),$library)[$item->mods->recordInfo->recordIdentifier];
+          }
+      }
 
   $xml->mods->shelfrank = $shelfrank;
   $json = json_encode($xml); 

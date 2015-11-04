@@ -1,5 +1,9 @@
 <?php
-  //require_once('/var/local/noble/circ/circ_counts.php');
+  $live = false;
+  if($live){
+    require_once('/var/local/noble/circ/circ_counts.php');
+  }
+
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
 
   //gets the id "string" of the book.  Find more in .htaccess
@@ -77,18 +81,20 @@
       
       $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
       
-      /** $shelfrank = 1;
-      foreach($libs as $library){
-          $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
-      } 
-      if($shelfrank >= 400){
-        $shelfrank = 100;
+      if($live){
+          $shelfrank = 1;
+          foreach($libs as $library){
+              $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
+          } 
+          if($shelfrank >= 400){
+            $shelfrank = 100;
+          }else{
+            $shelfrank = floor($shelfrank/4);
+          }
       }else{
-        $shelfrank = floor($shelfrank/4);
+          $shelfrank = 30;
       }
-      **/
       
-      $shelfrank = 30;
       //$shelfrank = rand(1,100);
       
     if(is_array($item->name)){
