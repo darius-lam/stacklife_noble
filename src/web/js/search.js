@@ -251,7 +251,6 @@ var library_cloud = (function () {
           };
         }
         else {
-            console.log(config);
           $.ajax({
                   // We're filtering on the Harvard collection here. This is a kludge and should be parameterized.
                   url: config.lc_url + '?' + config.get_query_string(),
@@ -261,7 +260,6 @@ var library_cloud = (function () {
                   success:
                     function (results) {
                         my.lc_results = results;
-                        console.log(my.lc_results);
                     }
             });
         }
@@ -357,14 +355,14 @@ var view = (function () {
             $('#persistent_controls').html(template(context));
 
 			// Draw our range slider for total_score
-			$('select#valueA, select#valueB').selectToUISlider({
+			/** $('select#valueA, select#valueB').selectToUISlider({
 				labels: 5,
 				sliderOptions: {
 					stop: function(event) {
 						filter.add_filter(config.scaled_field + ':[' + $('select#valueA').attr('value') + ' TO ' + $('select#valueB').attr('value') + ']');
 					}
 				}
-			});
+			});**/
 		}
 	}
 
