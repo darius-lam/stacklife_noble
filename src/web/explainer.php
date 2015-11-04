@@ -155,7 +155,7 @@ $(document).ready(function() {
 }
 
 .note7 {
-	margin:50px 0 0 80px;
+	margin:50px 0 0 125px;
 		-webkit-transform: rotate(1deg); 
 	-moz-transform: rotate(1deg); 
 	-o-transform: rotate(1deg);
@@ -204,11 +204,11 @@ $(document).ready(function() {
 
 
       	<div class="main span8">
-      		<!-- <div class="post-it note3">
-      			<p>Depth of the color blue indicates amount of use by the Harvard community since 2002</p>
+      		<div class="post-it note3">
+      			<p>Depth of the color blue indicates amount of use by the NOBLE community.</p>
       			
       			<p>We call this &quot;StackScore&quot;</p>
-      		</div>-->
+      		</div>
       		
       		<div class="post-it note4">
       			<p>Thickness of the book is based on page count, length indicates the actual length</p>
@@ -290,18 +290,18 @@ $(document).ready(function() {
       </ul>
     </div>
     
-    <!--
-    	    <div class="post-it note7">
-      		    <p>StackScore represents community usage, 1 - 100</p>
-      	    </div>
-    -->
+    
+    <div class="post-it note7">
+        <p>StackScore represents community usage, 1 - 100</p>
+    </div>
+    
     <h3 class="clickable slide-more toc-title">Table of Contents<span class="arrow"></span></h3>
     <div class="slide-content" style="display:none;">
       <div id="toc"></div>
     </div>
     </div>
     
-    <!--
+    
     <div id="all-rank">	            
     <div id="shelfRankCalc" class="button-shelfRank">
       <span class="unpack">StackScore</span>
