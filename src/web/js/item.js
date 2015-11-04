@@ -569,6 +569,7 @@ function match_values(data){
     //---------------
     // Shelfrank Beta
     //---------------
+    this_details.circ_count = this_details.shelfrank;
     if(this_details.shelfrank >= 400){
         this_details.shelfrank=100;
     }else{

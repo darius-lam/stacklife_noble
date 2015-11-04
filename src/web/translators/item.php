@@ -43,10 +43,12 @@
   //data from noble catalog is in xml, so we parse it into JSON
   $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
   $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
+    $j = json_encode($xml);
+    $item = json_decode($j);
 
   /** $shelfrank = 1;
   foreach($libs as $library){
-      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
+      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->mods->recordInfo->recordIdentifier),$library)[$item->mods->recordInfo->recordIdentifier];
   } **/
 
   $xml->mods->shelfrank = 100;

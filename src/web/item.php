@@ -193,10 +193,7 @@ Your browser does not support the audio element.
   
   <div id="rank-math" class="slide-content" style="display:none;">
     <ul>
-      <li><p>Faculty checkouts: {{score_checkouts_fac}}</p></li>
-      <li><p>Undergrad checkouts: {{score_checkouts_undergrad}}</p></li>
-      <li><p>Graduate checkouts: {{score_checkouts_grad}}</p></li>
-      <li><p>Holding libraries: {{score_holding_libs}}</p></li>
+      <li><p>Circulation Coubnt: {{circ_count}}</p></li>
     </ul>
   </div>
 
