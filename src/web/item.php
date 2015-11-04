@@ -183,7 +183,7 @@ Your browser does not support the audio element.
     
     </div>
     
-    <!--
+    
     <div id="all-rank" class="slide-more">
     <div id="shelfRankCalc" class="button-shelfRank">
       <span class="unpack">StackScore</span>

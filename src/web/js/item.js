@@ -565,8 +565,16 @@ function match_values(data){
     }
     this_details.publisher = this_details.publisher;
     this_details.pub_date = this_details.dateIssued;
-
-    this_details.shelfrank = 30;
+    
+    //---------------
+    // Shelfrank Beta
+    //---------------
+    if(this_details.shelfrank >= 400){
+        this_details.shelfrank=100;
+    }else{
+        this_details.shelfrank = this_details.shelfrank/4;
+    }
+    
     this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
     this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");

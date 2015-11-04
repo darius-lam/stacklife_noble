@@ -1,6 +1,6 @@
 <?php
+    //require_once('/var/local/noble/circ/circ_counts.php');
     error_reporting(E_ALL ^ E_NOTICE);
-
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
   //Queries come from ajax calls in item.js
   $q = $_GET['query'];
@@ -42,8 +42,15 @@
   $contents = fetch_page($url);
   //data from noble catalog is in xml, so we parse it into JSON
   $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
-  $json = json_encode($xml); 
+  $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
 
+  /** $shelfrank = 1;
+  foreach($libs as $library){
+      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library);
+  } **/
+
+  $xml->mods->shelfrank = 100;
+  $json = json_encode($xml); 
   echo $json;
 
 function fetch_page($url) {

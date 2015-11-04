@@ -70,10 +70,20 @@
   foreach($items as $item) {
     $title = '';
     $author = '';
-
-    //$shelfrank = getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),"NOBLE")[$item->recordInfo->recordIdentifier];
-      $shelfrank = 35;
-      //$shelfrank = rand(0,100);
+    
+      //-------------
+      // Circulation Data
+      //-------------
+      
+      $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
+      
+      /** $shelfrank = 1;
+      foreach($libs as $library){
+          $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library);
+      } **/
+      
+      $shelfrank = 30;
+      //$shelfrank = rand(1,100);
       
     if(is_array($item->name)){
         foreach ($item->name as $name){
