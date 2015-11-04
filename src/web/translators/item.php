@@ -46,7 +46,7 @@
 
   /** $shelfrank = 1;
   foreach($libs as $library){
-      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library);
+      $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
   } **/
 
   $xml->mods->shelfrank = 100;
