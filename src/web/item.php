@@ -214,7 +214,7 @@ Your browser does not support the audio element.
 	</script>
 	<script id="shelves-template" type="text/x-handlebars-template">
 	  <ul>
-	  	{{#if loc_call_num_sort_order}}
+	  	{{#if isbn}}
 			<li id="callview" class="button stack-button"><span class="reload">Infinite Stack</span></li>
 			{{else}}
 			<li id="callview" class="button-disabled">No Call Number Stack</li>
