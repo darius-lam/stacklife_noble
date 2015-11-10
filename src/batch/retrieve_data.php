@@ -23,7 +23,7 @@
         CURLOPT_RETURNTRANSFER => 2,
         /**CURLOPT_URL => "http://librarylab.law.harvard.edu/awesome/api/item/recently-awesome?limit=200"
         We may want to randomize a search query here, since Noblenet does not support "recently awesomed" data**/
-        CURLOPT_URL => "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=machine+learning+and+artificial+intelligence&count=40"
+        CURLOPT_URL => "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=artificial+intelligence+neural+networks&count=40"
     ));
     $response = curl_exec($curl);
     curl_close($curl);
@@ -127,14 +127,16 @@
             $static_doc['pub_date'] = intval($item->originInfo->dateIssued);
         }
 
-        if (property_exists($item, 'typeOfResource') && !empty($item->typeOfResource)) {
+        /** if (property_exists($item, 'typeOfResource') && !empty($item->typeOfResource)) {
             $type = $item->typeOfResource;
             if($type == "text"){
                 $type="Book";
             }
-            $static_doc['format'] = $type;
-        }
-
+             = $type;
+        } **/
+        
+        $static_doc['format'] = "Book";
+        
         if(is_array($item->titleInfo)){
             $title_nf = $item->titleInfo[0]->title;
         }else{

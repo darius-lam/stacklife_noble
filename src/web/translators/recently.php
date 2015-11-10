@@ -36,17 +36,22 @@
             $shelfrank = 35;
 
 
-            if(is_array($item->name)){
-                foreach ($item->name as $name){
-                    array_push($creator,$name->namePart);
-                }
-            }else{
-                if(is_array($item->name->namePart)){
-                     $creator = array($item->name->namePart[0]);
+            if(property_exists($item,'name')){
+                if(is_array($item->name)){
+                    foreach ($item->name as $name){
+                        array_push($creator,$name->namePart);
+                    }
                 }else{
-                    $creator = array($item->name->namePart);
+                    if(is_array($item->name->namePart)){
+                         $creator = array($item->name->namePart[0]);
+                    }else{
+                        $creator = array($item->name->namePart);
+                    }
                 }
-            }
+              }
+              if(!isset($creator) || $creator == NULL){
+                $creator = "N/a";  
+              }
 
 
             if (!empty($item->titleInfo->title)) {
@@ -92,11 +97,7 @@
             }
 
 
-            $format = $item->typeOfResource;
-            //need to fix
-            if($format == "text"){
-                $format = "Book";
-            }
+            $format = "Book";
 
             $year = substr($year, 0, 4);
             //$format = str_replace(" ", "", $format);

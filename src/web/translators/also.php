@@ -2,6 +2,10 @@
 
   require_once(__DIR__ . '/../../../etc/sl_ini.php');
   
+    if($live){
+        require_once('/var/local/noble/circ/circ_counts.php');
+    }
+
   connect_db();
   
   $uid = $_GET['query'];
@@ -56,17 +60,22 @@
         $shelfrank = 35;
 
 
-        if(is_array($item->name)){
-            foreach ($item->name as $name){
-                array_push($creator,$name->namePart);
-            }
-        }else{
-            if(is_array($item->name->namePart)){
-                 $creator = array($item->name->namePart[0]);
+        if(property_exists($item,'name')){
+            if(is_array($item->name)){
+                foreach ($item->name as $name){
+                    array_push($creator,$name->namePart);
+                }
             }else{
-                $creator = array($item->name->namePart);
+                if(is_array($item->name->namePart)){
+                     $creator = array($item->name->namePart[0]);
+                }else{
+                    $creator = array($item->name->namePart);
+                }
             }
-        }
+          }
+          if(!isset($creator) || $creator == NULL){
+            $creator = "N/a";  
+          }
 
 
         if (!empty($item->titleInfo->title)) {
@@ -111,13 +120,25 @@
             $year = intval($item->originInfo->dateIssued);
         }
 
+        $format = "Book";
+        
+        
+        $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
 
-        $format = $item->typeOfResource;
-        //need to fix
-        if($format == "text"){
-            $format = "Book";
+        if($live){
+            $shelfrank = 1;
+            foreach($libs as $library){
+                $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
+              } 
+          if($shelfrank >= 400){
+            $shelfrank = 100;
+          }else{
+            $shelfrank = floor($shelfrank/4);
+          }
+        }else{
+          $shelfrank = 30;
         }
-
+        
         $year = substr($year, 0, 4);
         //$format = str_replace(" ", "", $format);
 
