@@ -2,16 +2,8 @@ $(document).ready(function() {
     
     var isPublic = document.location.hostname.search("noblenet.org") !== -1;
     
-	if (History.enabled) {
-    History.Adapter.bind(window,'statechange',function(){
-		  var State = History.getState();
-		  if(State.data.data) {
-		    draw_item_panel(State.data.data);
-		  }
-	  });
-    }
-
 	// Fetch data about the item
+    console.log(uid);
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
@@ -26,8 +18,11 @@ $(document).ready(function() {
   			uniform_id = data.mods.ut_id;
             
             var this_details = match_values(data);
+            // THIS MAY CAUSE PROBLEMS
+            draw_item_panel(this_details);
             
 			if ( History.enabled ) {
+                console.log('enabled');
 			  History.replaceState({data:this_details}, this_details.titleInfo.title, this_details.link);
 			}
 			else {
@@ -35,6 +30,17 @@ $(document).ready(function() {
 			}
     }
 	});
+    
+    if (History.enabled) {
+        console.log('enabled-1');
+        History.Adapter.bind(window,'statechange',function(){
+		  var State = History.getState();
+		  if(State.data.data) {
+		    draw_item_panel(State.data.data);
+		  }
+	  });
+    }
+    
 	$('#viewerCanvas').css('height', stackheight*.9).css('width', stackheight*.75);
 
 	$(window).resize(function() {

@@ -67,8 +67,7 @@ foreach($user_books as $id) {
                         $creator = array($item->name->namePart);
                     }
                 }
-              }
-              if(!isset($creator) || $creator == NULL){
+              }else{
                 $creator = "N/a";  
               }
 

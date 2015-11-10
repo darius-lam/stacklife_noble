@@ -48,12 +48,12 @@
         
         //Author(s)
         if($field->attributes()->tag == '100'){
-            $creator  = $field->subfield;
+            $creator  = json_decode(json_encode($field->subfield),true)[0];
         }
         
         //Title and title_link_friendly
         if($field->attributes()->tag == '245'){
-            $title = $field->subfield[0];
+            $title = json_decode(json_encode($field->subfield),true)[0];
             
             if(!empty($field->subfield[1])){
                 $title = $title . $field->subfield[1];
@@ -98,10 +98,9 @@
         
         //year
         if($field->attributes()->tag == '260'){
-            if(is_array($field->subfield)){
-                foreach($field->subfield as $fi){
-                    if($fi->attributes()->code == 'c'){
-                        preg_match('/([1-9]*\s*)(?=p)/',$fi[0],$p);
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'c'){
+                    if(preg_match('/([1-9]*\s*)(?=p)/',$fi[0],$p)){
                         $year = (int) $p[0];
                     }
                 }

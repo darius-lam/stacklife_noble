@@ -72,10 +72,9 @@
                     $creator = array($item->name->namePart);
                 }
             }
-          }
-          if(!isset($creator) || $creator == NULL){
-            $creator = "N/a";  
-          }
+          }else{
+                $creator = "N/a";  
+              }
 
 
         if (!empty($item->titleInfo->title)) {

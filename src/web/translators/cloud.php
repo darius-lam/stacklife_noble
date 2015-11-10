@@ -71,7 +71,10 @@
 
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
 
+  $i = 0;
   foreach($items as $item) {
+    //use the xml item too, if necessary
+    $xitem = $xml->mods[$i];
     $title = '';
     $author = '';
     
@@ -109,8 +112,7 @@
                 $creator = array($item->name->namePart);
             }
         }
-      }
-      if(!isset($creator) || $creator == NULL){
+      }else{
         $creator = "N/a";  
       }
       
@@ -184,8 +186,6 @@
     }
     
     if(!empty($itemid->{'@attributes'}->invalid) && ($itemid->{'@attributes'}->invalid == 'yes')){
-        //$link = "/item/" . $title_link_friendly . '/' . $item->recordInfo->recordIdentifier;
-        //$id = 000;
 
         $hits = $hits - 1;
         $push = false;
@@ -216,6 +216,7 @@
     if($push){
        array_push($json, $temp_array);
     }
+       $i = $i + 1;
   }
 
   //$last = $offset + 10;
