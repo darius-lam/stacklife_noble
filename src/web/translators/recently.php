@@ -2,6 +2,10 @@
     
   require_once(__DIR__ .  '/../../../etc/sl_ini.php');
     
+  if($live){
+    require_once('/var/local/noble/circ/circ_counts.php');
+  }
+
   $user_books = array_unique($_GET['recently']);
 	$limit = $_GET['limit'];
 	$start = $_GET['start'];
@@ -96,6 +100,23 @@
             }
 
 
+            
+         $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
+
+          if($live){
+              $shelfrank = 1;
+              foreach($libs as $library){
+                  $shelfrank = $shelfrank + getNOBLECirculationCount(array($item->recordInfo->recordIdentifier),$library)[$item->recordInfo->recordIdentifier];
+              } 
+              if($shelfrank >= 400){
+                $shelfrank = 100;
+              }else{
+                $shelfrank = floor($shelfrank/4);
+              }
+          }else{
+              $shelfrank = 30;
+          }
+            
             $format = "Book";
 
             $year = substr($year, 0, 4);
