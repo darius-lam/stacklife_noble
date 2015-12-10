@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <?php
+  session_start();
   require_once (__DIR__ . '/../../etc/sl_ini.php');
   include_once('includes/item.inc.php');
 ?>
@@ -27,6 +28,7 @@ EOF;
 var worldcatnum = '',
 loc_call_num_sort_order = '';
 anchor_subject = '',
+sc = '<?php echo $sc ?>',
 uniform_id = '',
 uniform_count = '',
 uid = '<?php echo $uid ?>',
@@ -49,6 +51,7 @@ google.load("books", "0");
 
 $(document).ready(function() {
 	<?php
+    session_start();
 	foreach(array_reverse($_SESSION['books']) as $id => $past_book){
 		if($id != $uid) {
 	?>
@@ -73,19 +76,33 @@ $(document).ready(function() {
 		<div id="contextData" class="group span2">
 
 			<?php require_once('includes/logo.php');?>
+           
+           <br>
+            <!--- Change School Panel -->   
+            <h3 class="clickable slide-more school-selector">Library: <?php echo $_SESSION?><span class="arrow"></span></h3>
+            <div class="slide-content" style="display:none;">
+             
+              <div id="school">
+                 
+                  
+              </div>
+            </div>
+            <br>
+            
+            <span class="heading">Subject Stacks</span>
             
         	<div id="overlay-buttons">
           		<div id="shelves-panel"></div>
           		<div id="tagGraph"></div>
     		</div><!--end overlay-buttons-->
-
+            
         	<form id="book-tags-form" method="post">
       			<input type="text" id="bookTags" name="bookTags" class="required" onfocus="if (this.value=='tag it') this.value = ''" type="text" value="tag it"/>
 
             	<input type="submit" name="submit_tags"  id="submit_tags" value="Go!"/>
         	</form>
 
-        	<div class="book-tag-success"><p><span style="display:none;"></span></p></div>
+        	<div class="book-tag-success"><p><span style="display:none;"></span></p></div>    
       	</div><!-- end contextData -->
 
 

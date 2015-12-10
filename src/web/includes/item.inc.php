@@ -2,6 +2,7 @@
 // This display errors business should be set in the php.ini config
 ini_set("display_errors", 1);
 error_reporting(E_ALL ^ E_NOTICE);
+//error_reporting(E_ALL);
 
 // Start our session
 //session_start();
@@ -19,6 +20,7 @@ else
 	$also_viewed = array();
 
 $uid = $_GET['id'];
+$sc = $_SESSION['school'];
 
 // Put our decoded stuff back into the session cookie
 $_SESSION['books'][$uid]['link'] = $_SERVER['REQUEST_URI'];

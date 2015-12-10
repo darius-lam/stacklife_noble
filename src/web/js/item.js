@@ -22,7 +22,6 @@ $(document).ready(function() {
             draw_item_panel(this_details);
             
 			if ( History.enabled ) {
-                console.log('enabled');
 			  History.replaceState({data:this_details}, this_details.titleInfo.title, this_details.link);
 			}
 			else {
@@ -32,7 +31,6 @@ $(document).ready(function() {
 	});
     
     if (History.enabled) {
-        console.log('enabled-1');
         History.Adapter.bind(window,'statechange',function(){
 		  var State = History.getState();
 		  if(State.data.data) {
@@ -244,6 +242,15 @@ $(document).ready(function() {
         $('#availability-panel').html(template(data));
       }
     });**/
+        
+    var libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
+    
+    
+     var sc = "";
+     for(school in libs){
+         sc = sc + "<p><a href='' onclick='changeSchool(&quot;" + libs[school] + "&quot;);'>" + libs[school] + "</a></p>";
+     }
+    $("#school").html(sc)
 
     $("#toc").html('');
     if(item_details.tableOfContents) {
@@ -337,7 +344,11 @@ $(document).ready(function() {
 			$('#fixedstack').stackView({url: www_root + '/translators/recently.php?' + recentlyviewed, search_type: 'recently', ribbon: 'You recently viewed these'});
 		}
 		else if(compare === 'callview') {
-			$('#fixedstack').stackView({url: www_root + '/translators/nearby.php', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
+			//$('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
+            
+            //ID gets passed into line 275 of jquery.stackview.min.js
+            
+            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: ['asdf','ghjk'], ribbon: 'Infinite Stack: the library arranged by call number'});
 		}
 		else if(compare === 'alsoviewed') {
 			$('#fixedstack').stackView({url: www_root + '/translators/also.php', query: uid, search_type: 'also', ribbon: 'People who viewed this also viewed these'});
@@ -601,7 +612,25 @@ function match_values(data){
         }
         this_details.id = this_details.recordInfo.recordIdentifier; 
     }
+    
+    this_details.loc_call_num = 10
+    console.log(this_details.classification);
+    
     return this_details;
+}
+
+function changeSchool(school_name){
+    data = "key='school'&value=" + school_name;
+    $.ajax({
+        url: www_root + "/sl_funcs.php?func=set_session_var",
+        type: "post",
+        data: data,
+        success: function(data){
+            console.log(data);
+            debugger
+        }
+    });
+    
 }
 
 function eliminateDuplicatesStrings(arr) {

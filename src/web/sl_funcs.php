@@ -29,6 +29,15 @@ function session_info()
 
 }
 
+function set_session_var(){
+    session_start();
+    $key= trim($_GET["key"]);
+    $value= trim($_GET["value"]);
+    $_SESSION[$key] = $value;
+    session_write_close();
+    echo $key;
+}
+
 function fetch_availability()
 {
 	$hollis = $_GET['hollis'];
