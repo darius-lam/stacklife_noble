@@ -20,6 +20,11 @@ else
 	$also_viewed = array();
 
 $uid = $_GET['id'];
+
+if(!isset($_SESSION['school'])){
+    $_SESSION['school'] = "NOBLE";
+}
+
 $sc = $_SESSION['school'];
 
 // Put our decoded stuff back into the session cookie

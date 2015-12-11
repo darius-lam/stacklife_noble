@@ -11,11 +11,9 @@ $(document).ready(function() {
   		async: false,
   		success: function(data){
             //uid can either be ISBN or recordIdentifier!
-            
-            loc_call_num_sort_order = 10;
-            
-  			uniform_count = data.mods.ut_count;
-  			uniform_id = data.mods.ut_id;
+            console.log(data);
+  			//uniform_count = data.mods.ut_count;
+  			//uniform_id = data.mods.ut_id;
             
             var this_details = match_values(data);
             // THIS MAY CAUSE PROBLEMS
@@ -46,12 +44,12 @@ $(document).ready(function() {
 		$('.stackview').css('height', stackheight);
 		$('#viewerCanvas').css('height', stackheight*.9).css('width', stackheight*.75);
 	});
-
+    /**
 	if(uniform_count > 0) {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: $('#uniform').text()});
 		$('#uniform').addClass('selected-button');
 	}
-	/**else if (loc_call_num_sort_order) {
+	else if (loc_call_num_sort_order) {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
 		$('#callview').addClass('selected-button');
 	}**/
@@ -243,7 +241,7 @@ $(document).ready(function() {
       }
     });**/
         
-    var libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
+    var libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
     
     
      var sc = "";
@@ -348,14 +346,14 @@ $(document).ready(function() {
             
             //ID gets passed into line 275 of jquery.stackview.min.js
             
-            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: ['asdf','ghjk'], ribbon: 'Infinite Stack: the library arranged by call number'});
+            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
 		}
 		else if(compare === 'alsoviewed') {
 			$('#fixedstack').stackView({url: www_root + '/translators/also.php', query: uid, search_type: 'also', ribbon: 'People who viewed this also viewed these'});
 		}
-		else if(compare === 'uniform') {
+		/**else if(compare === 'uniform') {
 			$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: 'All editions'});
-		}
+		}**/
 	});
 
 	$('.subject-button').live('click',function() {
@@ -570,6 +568,20 @@ function match_values(data){
         }
     }
     
+    if(!this_details.electronic){
+        if(this_details.classification){
+            if(this_details.classification instanceof Array){
+               this_details.loc_call_num = this_details.classification[0];
+            }else{
+                this_details.loc_call_num = this_details.classification;
+            }
+            loc_call_num_sort_order = this_details.loc_call_num
+            console.log(loc_call_num_sort_order);
+        }
+    }
+    
+    
+    
     place = this_details.originInfo.place;
     if(place instanceof Array){
         place.forEach(function(entry){
@@ -613,21 +625,19 @@ function match_values(data){
         this_details.id = this_details.recordInfo.recordIdentifier; 
     }
     
-    this_details.loc_call_num = 10
-    console.log(this_details.classification);
+    console.log(this_details);
     
     return this_details;
 }
 
 function changeSchool(school_name){
-    data = "key='school'&value=" + school_name;
+   
+    data = "&key=school&value=" + school_name;
     $.ajax({
         url: www_root + "/sl_funcs.php?func=set_session_var",
-        type: "post",
+        type: "get",
         data: data,
         success: function(data){
-            console.log(data);
-            debugger
         }
     });
     

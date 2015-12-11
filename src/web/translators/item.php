@@ -13,14 +13,15 @@
   //$test_query = preg_replace("(/)", "+",$q);
   $offset = $_GET['start'];
   $limit = $_GET['limit']; 
+  $library = $_SESSION['school'];
   $search_type = $_GET['search_type'];
 
   global $NOBLE_URL;
 
   if($search_type == 'recordId'){
-    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$q";
+    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/marcxml/record/$q";
   }else{
-    $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+    $url = "$NOBLE_URL/$library/marcxml/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
   }
 
   // Get facets and filters
@@ -57,7 +58,7 @@
           }
       }
 
-  $xml->mods->shelfrank = $shelfrank;
+  $xml->record->shelfrank = $shelfrank;
   $json = json_encode($xml); 
   echo $json;
 

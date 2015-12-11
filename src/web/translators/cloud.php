@@ -1,5 +1,5 @@
 <?php
-
+  session_start();
   require_once (__DIR__ .  '/../../../etc/sl_ini.php');
 
   if($live){
@@ -11,17 +11,19 @@
 
   $q = urlencode($q);
   $offset = $_GET['start'];
+  $library = $_SESSION['school'];
   $limit = $_GET['limit'];
   $search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
 
  //check if our search_type is "recordId", because it uses a different link.
   if($search_type == 'recordId'){
-    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/mods/record/$q";
+    $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/marcxml/record/$q";
   }else{
-    $url = "$NOBLE_URL/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
+    $url = "$NOBLE_URL/$library/marcxml/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
   }
-  //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=asdf&count=25&startPage=0";
+
+  //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=artificial+intelligence&count=25&startPage=0";
 
 
   // Get facets and filters
@@ -50,40 +52,126 @@
   $contents = fetch_page($url);
 
   $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
-  $j = json_encode($xml);
-
-  $book_data = json_decode($j);
+  $book_data = $xml;
 
   //url that searches using recordId doesn't return totalResults field
+
   if($search_type == 'recordId'){
       $hits = 1;
   }else{
-      $hits = $book_data->totalResults;
-  }
-
-  //check to see if mods is an array, if not we make it one so it works with our for each loop
-  if(is_array($book_data->mods)){
-      $items = $book_data->mods;
-  }else if(!empty($book_data->mods)){
-      $items = array($book_data->mods);
+      $hits = (int)($book_data->totalResults[0]);
   }
   
+
+  //check to see if mods is an array, if not we make it one so it works with our for each loop
+  /**if(is_array($book_data->record)){
+      $items = $book_data->record;
+  }else if(!empty($book_data->record)){
+      $items = array($book_data->record);
+  }**/
 
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
 
   $i = 0;
-  foreach($items as $item) {
-    //use the xml item too, if necessary
-    $xitem = $xml->mods[$i];
+  foreach($book_data->record as $item) {
     $title = '';
     $author = '';
-    
+    $loc_sort_order = "";
+      
+    //Loop through all fields and compare them one by one
+    foreach($item->datafield as $field){
+        
+        //Author(s)
+        if($field->attributes()->tag == '100'){
+            $creator  = array(json_decode(json_encode($field->subfield),true)[0]);
+        }
+        
+        //Title and title_link_friendly
+        if($field->attributes()->tag == '245'){
+            $title = "";
+                
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'a'){
+                    $title = $title . (string) $fi;
+                }
+
+                if($fi->attributes()->code == 'b'){
+                    $title = $title . (string) $fi;
+                }
+            }
+            
+            $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$title);
+            $title_nf = $title;
+            $title_link_friendly = strtolower($title_nf);
+            //Make alphanumeric (removes all other characters)
+            $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
+            //Clean up multiple dashes or whitespaces
+            $title_link_friendly = preg_replace("/[\s-]+/", " ", $title_link_friendly);
+            //Remove spaces from end of line.
+            $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
+            //Convert whitespaces and underscore to dash
+            $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
+        }
+        
+        //physical description
+        if($field->attributes()->tag == '300'){
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'a'){
+                    if(preg_match('/([1-9]*\s*)(?=p)/',$fi,$p)) {
+                        $pages = (string) $p[0];
+                    }
+                }
+
+                if($fi->attributes()->code == 'c'){
+                    if(preg_match('/([1-9]*\s*)(?=cm)/',$fi,$height) ){
+                        $height_cm = (string) $height[0];
+                    }
+                }
+            }
+        }
+        
+        //format
+        $format = "Book";
+        
+        //pub_date
+        if($field->attributes()->tag == '260'){
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'c'){
+                    if(preg_match('/\d+/',$fi,$year)){
+                        $pub_date = (string) $year[0];
+                    }
+                }
+            }
+        }
+        
+        //RecordId
+        if($field->attributes()->tag == '901'){
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'c'){
+                    $id = (int) $fi;
+                }
+            }
+        }
+        
+        //Call number
+        //$loc_sort_order = $item->loc_call_num_sort_order'];
+        if($field->attributes()->tag == '092'){
+            foreach($field->subfield as $fi){
+                $loc_sort_order .= (string) $fi . ' ';
+            }
+        }
+        
+        //ISBN
+        if($field->attributes()->tag == '020'){
+            $isbn = preg_replace("/\s.*/","",$field->subfield[0][0]);
+        }
+    }
       //-------------
       // Circulation Data
       //-------------
-      
+
       $libs = array('BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP');
-      
+
       if($live){
           $shelfrank = 1;
           foreach($libs as $library){
@@ -100,118 +188,25 @@
       
       //$shelfrank = rand(1,100);
       
-      if(property_exists($item,'name')){
-        if(is_array($item->name)){
-            foreach ($item->name as $name){
-                array_push($creator,$name->namePart);
-            }
-        }else{
-            if(is_array($item->name->namePart)){
-                 $creator = array($item->name->namePart[0]);
-            }else{
-                $creator = array($item->name->namePart);
-            }
-        }
-      }else{
-        $creator = "N/a";  
-      }
-      
-
-
-    if (!empty($item->titleInfo->title)) {
-        $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo->title);
-        if(!empty($item->titleInfo->subTitle)){
-            $title = $title . ": " . $item->titleInfo->subTitle;
-        }
-
-    }else if (!empty($item->titleInfo[0]->title)){
-        $title = preg_replace("/[^A-Za-z0-9_\s-]/", "",$item->titleInfo[0]->title);
-
-        if(property_exists($item->titleInfo[0], 'nonSort') && !empty($item->titleInfo[0]->nonSort)){
-            $title = ($item->titleInfo[0]->nonSort) . $title;
-        }
-        if(!empty($item->titleInfo[0]->subTitle)){
-            $title = $title . ": " . $item->titleInfo[0]->subTitle;
-        }
-    }
-
-    $title_nf = $title;
-    $title_link_friendly = strtolower($title_nf);
-    //Make alphanumeric (removes all other characters)
-    $title_link_friendly = preg_replace("/[^a-z0-9_\s-]/", "",$title_link_friendly);
-    //Clean up multiple dashes or whitespaces
-    $title_link_friendly = preg_replace("/[\s-]+/", " ", $title_link_friendly);
-    //Remove spaces from end of line.
-    $title_link_friendly = preg_replace("/\s+$/", "", $title_link_friendly);
-    //Convert whitespaces and underscore to dash
-    $title_link_friendly = preg_replace("/[\s_]/", "-", $title_link_friendly);
-
-    if (!empty($item->physicalDescription->extent)) {
-
-        if( preg_match('/([1-9]*\s*)(?=cm)/',$item->physicalDescription->extent,$height) ){
-            $height_cm = $height[0];
-        }
-        if( preg_match('/([1-9]*\s*)(?=p)/',$item->physicalDescription->extent,$p)) {
-            $pages = $p[0];
-        }
-
-    }
-
+    $pub_date = substr($pub_date, 0, 4);
     if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
     if(!$pages) $pages = 200;
-
-    if(is_array($item->originInfo->dateIssued)){
-        $year = intval($item->originInfo->dateIssued[1]);
-    }else{
-        $year = intval($item->originInfo->dateIssued);
-    }
-
-    //$format = $item->physicalDescription->form;
-    //need to fix
-    $format = "Book";
-      
-    $year = substr($year, 0, 4);
-    //$format = str_replace(" ", "", $format);
-
-    //still don't have sort order
-    //$loc_sort_order = $item->loc_call_num_sort_order'];
-    $loc_sort_order= 10;
-
     $push = true;
-
-    // I love inconsistent data!
-    $itemid = $item->identifier;
-    if (is_array($item->identifier)) {
-      $itemid = $item->identifier[0];
-    }
     
-    if(!empty($itemid->{'@attributes'}->invalid) && ($itemid->{'@attributes'}->invalid == 'yes')){
-
+    if(!isset($isbn)){
         $hits = $hits - 1;
         $push = false;
         //we simply don't push this item if it doesn't have a valid ISBN.
     }else{
-        //may run into errors with this regex.
-        //check to see if identifier field is blank
-        if((!is_string($itemid))){
+        if((!is_string($isbn)) || (strlen($isbn) != 13 && strlen($isbn) != 10)){
             $push = false;
             $hits = $hits - 1;
-        }else{
-            $isbn = preg_replace("/\s.*/","",$itemid);
-            //check to see if isbn is either 13 or 10 characters long
-            if(strlen($isbn) != 13 && strlen($isbn) != 10){
-                $push = false;
-                $hits = $hits - 1;
-            }else{
-                //$id = $isbn;
-                $id=$item->recordInfo->recordIdentifier;
-                $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
-            }
         }
     }
+      
+    $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
 
-
-    $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $year, $title_link_friendly, $format, $loc_sort_order, $link);
+    $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $pub_date, $title_link_friendly, $format, $loc_sort_order, $link);
     $temp_array  = array_combine($books_fields, $books_data);
     if($push){
        array_push($json, $temp_array);

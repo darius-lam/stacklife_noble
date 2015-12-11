@@ -7,17 +7,16 @@
   }
 
   //gets the id "string" of the book.  Find more in .htaccess
-  $q = $_GET['query'];
-
-  $q = urlencode($q);
+  $id = $_GET['id'];
   $offset = $_GET['start'];
   $limit = $_GET['limit'];
+  $library = $_SESSION['school'];
   //$search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
 
   //Searching by call number
     //$url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/PANO/$q";
-    $url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/PANO/304.28";
+    $url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/$library/$id";
 
   $json = array();
 
@@ -39,7 +38,8 @@
   foreach($items as $item) {
     $title = '';
     $author = '';
-
+    $loc_sort_order = "";
+      
     //Call number data will be in $item->{@'attributes'}
     $it = $item->record->datafield;
       
@@ -48,17 +48,21 @@
         
         //Author(s)
         if($field->attributes()->tag == '100'){
-            $creator  = json_decode(json_encode($field->subfield),true)[0];
+            $creator  = array(json_decode(json_encode($field->subfield),true)[0]);
         }
         
         //Title and title_link_friendly
         if($field->attributes()->tag == '245'){
-            $title = json_decode(json_encode($field->subfield),true)[0];
-            
-            if(!empty($field->subfield[1])){
-                $title = $title . $field->subfield[1];
-            }else if(!empty($field->subfield[2])){
-                $title = $title . $field->subfield[2];
+            $title = "";
+                
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'a'){
+                    $title = $title . (string) $fi;
+                }
+
+                if($fi->attributes()->code == 'b'){
+                    $title = $title . (string) $fi;
+                }
             }
             
             $title =  preg_replace("/[^A-Za-z0-9_\s-]/", "",$title);
@@ -76,18 +80,16 @@
         
         //physical description
         if($field->attributes()->tag == '300'){
-            if(is_array($field->subfield)){
-                foreach($field->subfield as $fi){
-                    if($fi->attributes()->code == 'a'){
-                        if(preg_match('/([1-9]*\s*)(?=p)/',$fi,$p)) {
-                            $pages = (int) $p[0];
-                        }
+            foreach($field->subfield as $fi){
+                if($fi->attributes()->code == 'a'){
+                    if(preg_match('/([1-9]*\s*)(?=p)/',$fi,$p)) {
+                        $pages = (string) $p[0];
                     }
-                    
-                    if($fi->attributes()->code == 'c'){
-                        if(preg_match('/([1-9]*\s*)(?=cm)/',$fi,$height) ){
-                            $height_cm = (int) $height[0];
-                        }
+                }
+
+                if($fi->attributes()->code == 'c'){
+                    if(preg_match('/([1-9]*\s*)(?=cm)/',$fi,$height) ){
+                        $height_cm = (string) $height[0];
                     }
                 }
             }
@@ -96,13 +98,11 @@
         //format
         $format = "Book";
         
-        //year
+        //pub_date
         if($field->attributes()->tag == '260'){
             foreach($field->subfield as $fi){
                 if($fi->attributes()->code == 'c'){
-                    if(preg_match('/([1-9]*\s*)(?=p)/',$fi[0],$p)){
-                        $year = (int) $p[0];
-                    }
+                    $pub_date = (string) $fi;
                 }
             }
         }
@@ -111,8 +111,16 @@
         if($field->attributes()->tag == '901'){
             foreach($field->subfield as $fi){
                 if($fi->attributes()->code == 'c'){
-                    $id = $fi[0][0];
+                    $id = (int) $fi;
                 }
+            }
+        }
+        
+        //Call number
+        //$loc_sort_order = $item->loc_call_num_sort_order'];
+        if($field->attributes()->tag == '092'){
+            foreach($field->subfield as $fi){
+                $loc_sort_order .= (string) $fi . ' ';
             }
         }
         
@@ -143,14 +151,9 @@
       
       //$shelfrank = rand(1,100);
       
-    $year = substr($year, 0, 4);
+    $pub_date = substr($pub_date, 0, 4);
     if(!$height_cm || $height_cm > 33 || $height_cm < 20) $height_cm = 27;
     if(!$pages) $pages = 200;
-
-    //still don't have sort order
-    //$loc_sort_order = $item->loc_call_num_sort_order'];
-    $loc_sort_order= 10;
-
     $push = true;
     
     if(!isset($isbn)){
@@ -166,7 +169,7 @@
       
     $link = $www_root . "/item/" . $title_link_friendly . '/' . $id;
 
-    $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $year, $title_link_friendly, $format, $loc_sort_order, $link);
+    $books_data   = array($id, $title, $creator, $pages, $height_cm, $shelfrank, $pub_date, $title_link_friendly, $format, $loc_sort_order, $link);
     $temp_array  = array_combine($books_fields, $books_data);
     if($push){
        array_push($json, $temp_array);

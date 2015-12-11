@@ -79,7 +79,7 @@ $(document).ready(function() {
            
            <br>
             <!--- Change School Panel -->   
-            <h3 class="clickable slide-more school-selector">Library: <?php echo $_SESSION?><span class="arrow"></span></h3>
+            <h3 class="clickable slide-more school-selector">Library: <?php echo $_SESSION["school"]?><span class="arrow"></span></h3>
             <div class="slide-content" style="display:none;">
              
               <div id="school">
