@@ -5,6 +5,7 @@
   if($live){
     require_once('/var/local/noble/circ/circ_counts.php');
   }
+  //$start = microtime(true);
 
   //gets the id "string" of the book.  Find more in .htaccess
   $q = $_GET['query'];
@@ -22,35 +23,13 @@
   }else{
     $url = "$NOBLE_URL/$library/marcxml/$search_type/?searchTerms=$q&count=$limit&startPage=$offset";
   }
-
+   
   //$url = "http://catalog.noblenet.org/opac/extras/opensearch/1.1/NOBLE/mods/keyword/?searchTerms=artificial+intelligence&count=25&startPage=0";
-
-
-  // Get facets and filters
-  // TODO: This is ugly. Clean this stuff up.
-  /**$incoming = $_SERVER['QUERY_STRING'];
-  $facet_list = array();
-  foreach (explode('&', $incoming) as $pair) {
-      list($key, $value) = explode('=', $pair);
-      if ($key == 'facet') {
-          $url = $url . "&facet=" . $value;
-    }
-  }
-
-  $filter_list = array();
-  $filter_string = '';
-    foreach (explode('&', $incoming) as $pair) {
-        list($key, $value) = explode('=', $pair);
-        if ($key == 'filter') {
-            $url = $url . "&filter=" . $value;
-      }
-    }
-  **/
 
   $json = array();
 
   $contents = fetch_page($url);
-
+  //echo "Time to Load URL: " . (string) (microtime(true) - $start). "<br>" ;
   $xml = simplexml_load_string($contents, "SimpleXMLElement", LIBXML_NOCDATA);
   $book_data = $xml;
 
@@ -61,14 +40,6 @@
   }else{
       $hits = (int)($book_data->totalResults[0]);
   }
-  
-
-  //check to see if mods is an array, if not we make it one so it works with our for each loop
-  /**if(is_array($book_data->record)){
-      $items = $book_data->record;
-  }else if(!empty($book_data->record)){
-      $items = array($book_data->record);
-  }**/
 
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
 
@@ -165,6 +136,7 @@
         if($field->attributes()->tag == '020'){
             $isbn = preg_replace("/\s.*/","",$field->subfield[0][0]);
         }
+        
     }
       //-------------
       // Circulation Data
@@ -213,17 +185,14 @@
     }
        $i = $i + 1;
   }
-
-  //$last = $offset + 10;
     $last = $offset;
     header('Content-type: application/json');
+  //echo "Time to Finish: " . (string) (microtime(true) - $start) . "<br>";
 
   if(count($json) == 0 || $offset == -1) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}';
-    //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
   }
   else {
-    //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . ', "facets": ' . json_encode($facets) . '}';
       echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
   }
 

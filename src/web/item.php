@@ -175,7 +175,7 @@ Your browser does not support the audio element.
 {{/if}}
 		<div id="availability-panel"></div>
 
-    <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}}, {{publisher}}{{/if}}{{#if pub_date}}, {{pub_date}}{{/if}}</h3>
+    <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}} {{publisher}}{{/if}}{{#if pub_date}} {{pub_date}}{{/if}}</h3>
 
     <h3 class="clickable advanced-data slide-more">Advanced Bibliographic Data<span class="arrow"></span></h3>
 

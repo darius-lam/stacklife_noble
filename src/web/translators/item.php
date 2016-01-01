@@ -18,6 +18,7 @@
 
   global $NOBLE_URL;
 
+//CHANGE TO MARCXML
   if($search_type == 'recordId'){
     $url = "http://evergreen.noblenet.org/opac/extras/supercat/retrieve/marcxml/record/$q";
   }else{

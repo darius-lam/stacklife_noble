@@ -11,16 +11,15 @@ $(document).ready(function() {
   		async: false,
   		success: function(data){
             //uid can either be ISBN or recordIdentifier!
-            console.log(data);
   			//uniform_count = data.mods.ut_count;
   			//uniform_id = data.mods.ut_id;
             
-            var this_details = match_values(data);
+            var this_details = match_values_marc(data);
             // THIS MAY CAUSE PROBLEMS
             draw_item_panel(this_details);
             
 			if ( History.enabled ) {
-			  History.replaceState({data:this_details}, this_details.titleInfo.title, this_details.link);
+			  History.replaceState({data:this_details}, this_details.title, this_details.link);
 			}
 			else {
 			  draw_item_panel(this_details);
@@ -53,7 +52,7 @@ $(document).ready(function() {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
 		$('#callview').addClass('selected-button');
 	}**/
-	else if(anchor_subject !== '') {
+	if(anchor_subject !== '') {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: anchor_subject, ribbon: anchor_subject});
 		$('.subject-button:first').addClass('selected-button');
 	}
@@ -96,7 +95,7 @@ $(document).ready(function() {
 
 	// When an item in the stack is clicked, we update the book panel here
 	function draw_item_panel(item_details) {
-
+        console.log(item_details);
 		// set our global var
 		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
         
@@ -104,7 +103,7 @@ $(document).ready(function() {
         title = item_details.title
 		
         //uid = item_details.isbn;
-        uid = item_details.recordInfo.recordIdentifier;
+        uid = item_details.recordIdentifier;
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -125,7 +124,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "POST",
 			url: slurl,
-			data: "function=session_info&type=set&uid=" + item_details.recordInfo.recordIdentifier,
+			data: "function=session_info&type=set&uid=" + item_details.recordIdentifier,
 			async: false
 		});
 		recentlyviewed += '&recently[]=' + uid;
@@ -313,13 +312,13 @@ $(document).ready(function() {
   		data: {query : this_details.id, search_type : 'recordId', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-              var this_details = match_values(data);
+            var this_details = match_values_marc(data);
              if(isPublic){
                 ga('send', 'pageview', link);
              }
 			  //data.docs[0].this_button = this_button;
 			  if(History.enabled) {
-			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier);
+			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier);
                  
 			  }else {
         	   draw_item_panel(this_details);
@@ -499,7 +498,7 @@ function left_pad(value) {
 	return value;
 }
 
-function match_values(data){
+function match_values_mods(data){
     
     var subject = [];
     
@@ -576,7 +575,6 @@ function match_values(data){
                 this_details.loc_call_num = this_details.classification;
             }
             loc_call_num_sort_order = this_details.loc_call_num
-            console.log(loc_call_num_sort_order);
         }
     }
     
@@ -624,11 +622,152 @@ function match_values(data){
         }
         this_details.id = this_details.recordInfo.recordIdentifier; 
     }
+    return this_details;
+}
+
+
+
+function match_values_marc(data){
     
-    console.log(this_details);
+    var subject = [];
+    
+    this_details = data.record;
+    this_details.electronic=false;
+    title_nf = "";
+    sub_title = "";
+    this_details.classification = "";
+    
+    this_details.datafield.forEach(function (field){
+        
+            //Field 650
+            //Get list of subjects from book
+
+            if(field['@attributes'].tag == '650'){
+                if(field.subfield instanceof Array) {
+                    anchor_subject = field.subfield[0];
+
+                    if(field.subfield instanceof Array){
+                        subject.push(field.subfield[0]);
+                    }else{
+                        subject.push(field.subfield);
+                    }
+                }
+            }
+            
+            if(field['@attributes'].tag == '245'){
+                if(field.subfield instanceof Array && field.subfield.length >= 3){
+                    sub_title = field.subfield[1];
+                    title_nf = field.subfield[0];
+                }else{
+                    title_nf = field.subfield;
+                }
+                
+            }
+            
+            //test feature to render lightning logo in front of electronic resources
+            if(field['@attributes'].tag == '655'){
+              if(field.subfield instanceof Array){
+                  field.subfield.forEach(function(each){
+                       if(each == 'Electronic books.'){
+                           this_details.electronic = true;
+                       }
+                  });
+                }else if(field.subfield == 'Electronic books.'){
+                    this_details.electronic = true;
+                }
+            }
+            
+            //set up classification using the 050 tag
+            if(field['@attributes'].tag == '050'){
+                if(field.subfield instanceof Array){
+                  field.subfield.forEach(function(each){
+                       this_details.classification = this_details.classification + each;
+                  });
+                }else{
+                    this_details.classification = field.subfield;
+                }
+            }
+            
+            //if there's a more specific classification number (092) use it instead of the 050 tag.  The logic is that the 092 tag always comes after the 050 tag (?), and thus will replace the old tag.
+            if(field['@attributes'].tag == '092'){
+                if(field.subfield instanceof Array){
+                  field.subfield.forEach(function(each){
+                       this_details.classification = this_details.classification + each;
+                  });
+                }else{
+                    this_details.classification = field.subfield;
+                }
+            }
+            
+            if(field['@attributes'].tag == '260'){
+                place = field.subfield[0];
+                this_details.pub_location = place;
+                this_details.publisher = field.subfield[1];
+                this_details.pub_date = field.subfield[2];
+            }
+            
+            if(field['@attributes'].tag == '901'){
+                this_details.recordIdentifier = field.subfield[0];
+            }
+            
+            if(field['@attributes'].tag == '020'){
+                this_details.identifier = field.subfield.replace(/\s.*/,"");
+            }
+    });
+    
+    //Try to remove some unneeded stuff to lighten computational load!
+    delete this_details.datafield;
+    
+    //Setting up some variables to make it easier for templating
+    this_details.lcsh = subject;
+    this_details.title = title_nf.replace(/\//g,"");  
+    //.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/[\[\]']+/g,"")
+    //append subtitle to title
+    this_details.title = this_details.title + " " + sub_title;
+    
+    
+    if(!this_details.electronic){
+        if(this_details.classification){
+            this_details.loc_call_num = this_details.classification;
+            loc_call_num_sort_order = this_details.loc_call_num
+        }
+    }
+    
+    //---------------
+    // Shelfrank Beta
+    //---------------
+    this_details.circ_count = this_details.shelfrank;
+    if(this_details.shelfrank >= 400){
+        this_details.shelfrank=100;
+    }else{
+        this_details.shelfrank = Math.floor(this_details.shelfrank/4);
+    }
+    
+    this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
+    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
+    
+    
+    //add noblenet permalink support
+    this_details.noble_link = "http://evergreen.noblenet.org/eg/opac/record/" + this_details.recordIdentifier;
+
+    if(this_details.identifier){
+        link = "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier;   
+        isbn = this_details.recordIdentifier;
+        this_details.id = this_details.recordIdentifier; 
+    }else{
+        //NEED TO FIX
+        this_details.identifier = "N/a";
+        isbn = this_details.identifier;
+        this_details.id = this_details.recordIdentifier; 
+        link = "../" + this_details.title_link_friendly + "/3631519"; 
+    }
     
     return this_details;
 }
+
+
 
 function changeSchool(school_name){
    
