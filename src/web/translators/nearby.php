@@ -7,16 +7,19 @@
   }
 
   //gets the id "string" of the book.  Find more in .htaccess
-  $id = $_GET['id'];
+  $id = urlencode($_GET['query']);
   $offset = $_GET['start'];
   $limit = $_GET['limit'];
-  $library = $_SESSION['school'];
+  $library = $_SESSION["school"];
+  $library = "PANO";
+
   //$search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
-
+    
   //Searching by call number
     //$url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/PANO/$q";
     $url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/$library/$id";
+    //$url = "http://catalog.noblenet.org/opac/extras/browse/xml-full/call_number/PANO/500%20B84s";
 
   $json = array();
 
@@ -34,11 +37,11 @@
   
 
   $books_fields = array('id', 'title','creator','measurement_page_numeric','measurement_height_numeric', 'shelfrank', 'pub_date', 'title_link_friendly', 'format', 'loc_call_num_sort_order', 'link');
-
+  
   foreach($items as $item) {
     $title = '';
     $author = '';
-    $loc_sort_order = "";
+    $loc_sort_order = (string)$item->attributes()->label;
       
     //Call number data will be in $item->{@'attributes'}
     $it = $item->record->datafield;
@@ -116,18 +119,22 @@
             }
         }
         
-        //Call number
+        //Call number; We're using the volume->label attribute for now
         //$loc_sort_order = $item->loc_call_num_sort_order'];
+        /**
         if($field->attributes()->tag == '092'){
+            $loc_sort_order = "";
             foreach($field->subfield as $fi){
                 $loc_sort_order .= (string) $fi . ' ';
             }
-        }
+        }**/
         
         //ISBN
+
         if($field->attributes()->tag == '020'){
             $isbn = preg_replace("/\s.*/","",$field->subfield[0][0]);
         }
+        
     }
       //-------------
       // Circulation Data

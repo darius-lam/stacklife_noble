@@ -43,15 +43,6 @@ $(document).ready(function() {
 		$('.stackview').css('height', stackheight);
 		$('#viewerCanvas').css('height', stackheight*.9).css('width', stackheight*.75);
 	});
-    /**
-	if(uniform_count > 0) {
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: $('#uniform').text()});
-		$('#uniform').addClass('selected-button');
-	}
-	else if (loc_call_num_sort_order) {
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
-		$('#callview').addClass('selected-button');
-	}**/
 	if(anchor_subject !== '') {
 		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: anchor_subject, ribbon: anchor_subject});
 		$('.subject-button:first').addClass('selected-button');
@@ -95,9 +86,9 @@ $(document).ready(function() {
 
 	// When an item in the stack is clicked, we update the book panel here
 	function draw_item_panel(item_details) {
-        console.log(item_details);
 		// set our global var
-		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
+		loc_call_num_sort_order = item_details.loc_call_num;
+        
         
         //make sure that the title is not an array
         title = item_details.title
@@ -131,19 +122,11 @@ $(document).ready(function() {
         
 		// replace creator list
 		item_details.creators = '';
-		if(item_details.name) {
+		if(item_details.authors) {
 			var creator_markup_list = [];
-			$.each(item_details.name, function(i, item){
-                if(typeof item.namePart == 'string'){
-                    creator_markup_list.push('<a class="creator" href="../../author/' + item.namePart + '">' + item.namePart + '</a>');
-                }else if(Object.prototype.toString.call(item.namePart) == '[object Array]'){
-                    creator_markup_list.push('<a class="creator" href="../../author/' + item.namePart[0] + '">' + item.namePart[0] + '</a>');
-                }else if(typeof item == 'string'){
-                    creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');  
-                }else if(Object.prototype.toString.call(item) == '[object Array]'){
-                    if(typeof item[0] == 'string'){
-                       creator_markup_list.push('<a class="creator" href="../../author/' + item[0] + '">' + item[0] + '</a>');  
-                   }
+			$.each(item_details.authors, function(i, item){
+                if(typeof item == 'string'){
+                    creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
                 }
 			});
 
@@ -341,18 +324,13 @@ $(document).ready(function() {
 			$('#fixedstack').stackView({url: www_root + '/translators/recently.php?' + recentlyviewed, search_type: 'recently', ribbon: 'You recently viewed these'});
 		}
 		else if(compare === 'callview') {
-			//$('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
-            
-            //ID gets passed into line 275 of jquery.stackview.min.js
-            
-            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
+            console.log(loc_call_num_sort_order);
+            console.log(this_details.loc_call_num);
+            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: this_details.loc_call_num, ribbon: 'Infinite Stack: the library arranged by call number'});
 		}
 		else if(compare === 'alsoviewed') {
 			$('#fixedstack').stackView({url: www_root + '/translators/also.php', query: uid, search_type: 'also', ribbon: 'People who viewed this also viewed these'});
 		}
-		/**else if(compare === 'uniform') {
-			$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: 'All editions'});
-		}**/
 	});
 
 	$('.subject-button').live('click',function() {
@@ -636,6 +614,7 @@ function match_values_marc(data){
     title_nf = "";
     sub_title = "";
     this_details.classification = "";
+    this_details.authors = []
     
     this_details.datafield.forEach(function (field){
         
@@ -662,6 +641,9 @@ function match_values_marc(data){
                     title_nf = field.subfield;
                 }
                 
+                if(title_nf instanceof Array){
+                    title_nf = title_nf.join("");
+                }
             }
             
             //test feature to render lightning logo in front of electronic resources
@@ -678,7 +660,7 @@ function match_values_marc(data){
             }
             
             //set up classification using the 050 tag
-            if(field['@attributes'].tag == '050'){
+            if(field['@attributes'].tag == '050' && this_details.classification){
                 if(field.subfield instanceof Array){
                   field.subfield.forEach(function(each){
                        this_details.classification = this_details.classification + each;
@@ -692,7 +674,7 @@ function match_values_marc(data){
             if(field['@attributes'].tag == '092'){
                 if(field.subfield instanceof Array){
                   field.subfield.forEach(function(each){
-                       this_details.classification = this_details.classification + each;
+                       this_details.classification = this_details.classification + each + " ";
                   });
                 }else{
                     this_details.classification = field.subfield;
@@ -711,12 +693,32 @@ function match_values_marc(data){
             }
             
             if(field['@attributes'].tag == '020'){
-                this_details.identifier = field.subfield.replace(/\s.*/,"");
+                if(field.subfield instanceof Array){
+                    this_details.identifier = field.subfield[0].replace(/\s.*/,"");
+                }else{
+                    this_details.identifier = field.subfield.replace(/\s.*/,"");
+                }
+            }
+            
+            if(field['@attributes'].tag == '100'){
+                if(field.subfield instanceof Array){
+                    this_details.authors = this_details.authors.concat(field.subfield[0]);
+                }else{
+                    this_details.authors = this_details.authors.concat(field.subfield);
+                }
+            }
+        
+            if(field['@attributes'].tag == '700'){
+                if(field.subfield instanceof Array){
+                    this_details.authors = this_details.authors.concat(field.subfield[0]);
+                }else{
+                    this_details.authors = this_details.authors.concat(field.subfield);
+                }
             }
     });
     
     //Try to remove some unneeded stuff to lighten computational load!
-    delete this_details.datafield;
+    //delete this_details.datafield;
     
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
@@ -729,10 +731,11 @@ function match_values_marc(data){
     if(!this_details.electronic){
         if(this_details.classification){
             this_details.loc_call_num = this_details.classification;
-            loc_call_num_sort_order = this_details.loc_call_num
+            loc_call_num_sort_order = this_details.loc_call_num;
+            console.log(loc_call_num_sort_order);
         }
     }
-    
+   
     //---------------
     // Shelfrank Beta
     //---------------
