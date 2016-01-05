@@ -206,6 +206,8 @@ $(document).ready(function() {
 		drawTagNeighborhood();
 
 		var source = $("#item-template").html();
+        item_details.not_noble = (current_school != "NOBLE");
+        console.log(item_details.not_noble);
 		var template = Handlebars.compile(source);
     $('#item-panel').html(template(item_details));
 
@@ -780,6 +782,7 @@ function changeSchool(school_name){
         type: "get",
         data: data,
         success: function(data){
+            current_school = data;
         }
     });
     

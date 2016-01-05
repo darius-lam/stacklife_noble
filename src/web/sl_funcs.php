@@ -35,7 +35,7 @@ function set_session_var(){
     $value= $_GET["value"];
     $_SESSION[$key] = $value;
     session_write_close();
-    echo $key;
+    echo $value;
 }
 
 function fetch_availability()

@@ -11,8 +11,9 @@
   $offset = $_GET['start'];
   $limit = $_GET['limit'];
   $library = $_SESSION["school"];
+  $direction = $_GET['direction'];
+  
   $library = "PANO";
-
   //$search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
     
@@ -189,11 +190,16 @@
 
   if(count($json) == 0 || $offset == -1) {
     echo '{"start": "-1", "num_found": ' . $hits . ', "limit": "0", "docs": ""}';
-    //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
   }
   else {
-    //echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . ', "facets": ' . json_encode($facets) . '}';
-      echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
+      if($direction == 'center'){
+          echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode($json) . '}';
+      }else if($direction == 'up'){
+          echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode(array_slice($json,0,round(sizeof($json)/2)-1)) . '}';
+      }else if($direction == 'down'){
+          echo '{"start": ' . $last. ', "limit": "' . $limit . '", "num_found": ' . $hits . ', "docs": ' . json_encode(array_slice($json,round(sizeof($json)/2),sizeof($json))) . '}';
+      }
+      
   }
 
 function fetch_page($url) {

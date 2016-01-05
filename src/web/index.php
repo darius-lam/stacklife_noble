@@ -14,6 +14,19 @@ echo <<<EOF
 EOF;
 ?>
 
+<script>
+   
+data = "&key=school&value=NOBLE";
+$.ajax({
+    url: "<?php echo $www_root ?>/sl_funcs.php?func=set_session_var",
+    type: "get",
+    data: data,
+    success: function(data){
+    }
+});
+    
+</script>
+
 </head>
 
 <body>

@@ -40,6 +40,8 @@ var www_root = '<?php echo $www_root ?>';
 
 var recentlyviewed = '';
 var alsoviewed = new Array();
+    
+var current_school = '<?php echo $_SESSION["school"]?>';
 
 var GBSArray = ['ISBN:<?php echo $isbn_trim ?>', 'OCLC: 0'];
 
@@ -89,7 +91,8 @@ $(document).ready(function() {
             </div>
             <br>
             
-            <span class="heading">Subject Stacks</span>
+            <span class="heading">Infinite Stack</span>
+            <br>
             
         	<div id="overlay-buttons">
           		<div id="shelves-panel"></div>
@@ -231,12 +234,17 @@ Your browser does not support the audio element.
 	</script>
 	<script id="shelves-template" type="text/x-handlebars-template">
 	  <ul>
-	  	{{#if loc_call_num}}
+      
+        {{#if loc_call_num}}
+            {{#if not_noble}}
 			<li id="callview" class="button stack-button"><span class="reload">Infinite Stack</span></li>
 			{{else}}
-			<li id="callview" class="button-disabled">No Call Number Stack</li>
-			{{/if}}
-		</ul>
+			<li id="callview" class="button-disabled">No Stack for this Library</li>
+            {{/if}}
+        {{else}}
+            <li id="callview" class="button-disabled">No Call Number Stack</li>
+        {{/if}}
+        </ul>
 		 <br/>
     <span class="heading">Subject Stacks</span>
     <ul>
