@@ -88,6 +88,7 @@ $(document).ready(function() {
                  
                   
               </div>
+              
             </div>
             <br>
             
@@ -179,12 +180,15 @@ Your browser does not support the audio element.
 		<div id="availability-panel"></div>
 
     <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}} {{publisher}}{{/if}}{{#if pub_date}} {{pub_date}}{{/if}}</h3>
+    
+    
 
     <h3 class="clickable advanced-data slide-more">Advanced Bibliographic Data<span class="arrow"></span></h3>
 
     <div class="advanced-data-box slide-content" style="display:none;">
       <ul>
         <li class="advanced-isbn"><p>ISBN: {{isbn}}</p></li>
+        {{#if loc_call_num}} <li class="advanced-isbn"><p>Call Number(s): {{loc_call_num}}</p></li>{{/if}}
         {{#if oclc}}<li class="advanced-oclc"><p>OCLC: {{oclc}}</p></li>{{/if}}
         <li class="advanced-language"><p>Language: {{language}}</p></li>
       </ul>
@@ -235,7 +239,7 @@ Your browser does not support the audio element.
 	<script id="shelves-template" type="text/x-handlebars-template">
 	  <ul>
       
-        {{#if loc_call_num}}
+        {{#if loc_call_num_match_school}}
             {{#if not_noble}}
 			<li id="callview" class="button stack-button"><span class="reload">Infinite Stack</span></li>
 			{{else}}

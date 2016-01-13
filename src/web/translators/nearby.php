@@ -10,10 +10,10 @@
   $id = urlencode($_GET['query']);
   $offset = $_GET['start'];
   $limit = $_GET['limit'];
-  $library = $_SESSION["school"];
+  $library = $_GET['school'];
   $direction = $_GET['direction'];
-  
-  $library = "PANO";
+ 
+  //$library = "PANO";
   //$search_type = $_GET['search_type'];
   $sort = urlencode($_GET['sort']);
     

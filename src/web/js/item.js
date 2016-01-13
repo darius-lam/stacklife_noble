@@ -3,7 +3,6 @@ $(document).ready(function() {
     var isPublic = document.location.hostname.search("noblenet.org") !== -1;
     
 	// Fetch data about the item
-    console.log(uid);
 	$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
@@ -87,7 +86,11 @@ $(document).ready(function() {
 	// When an item in the stack is clicked, we update the book panel here
 	function draw_item_panel(item_details) {
 		// set our global var
-		loc_call_num_sort_order = item_details.loc_call_num;
+        if(current_school == 'PANO' && item_details.loc_call_num && item_details.loc_call_num[1]){
+            loc_call_num_sort_order = item_details.loc_call_num[1];
+        }else if(item_details.loc_call_num && item_details.loc_call_num[0]){
+            loc_call_num_sort_order = item_details.loc_call_num[0];
+        }
         
         
         //make sure that the title is not an array
@@ -207,7 +210,22 @@ $(document).ready(function() {
 
 		var source = $("#item-template").html();
         item_details.not_noble = (current_school != "NOBLE");
-        console.log(item_details.not_noble);
+        
+        if(item_details.loc_call_num){
+            if(item_details.loc_call_num[1] != ""){
+                if(isInArray(current_school,["PANO","PANA","PANB","PANC","PANG","PANI","PANK","PANP"])){
+                    item_details.loc_call_num_match_school = true;
+                }
+            }
+
+            if(item_details.loc_call_num[0] != ""){
+                if(!isInArray(current_school,["PANO","PANA","PANB","PANC","PANG","PANI","PANK","PANP"])){
+                    item_details.loc_call_num_match_school = true;
+                }
+            }
+        }
+        
+        
 		var template = Handlebars.compile(source);
     $('#item-panel').html(template(item_details));
 
@@ -227,10 +245,11 @@ $(document).ready(function() {
         
     var libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
     
-    
+    var pretty_libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PA-OWHL','PA-ADDIS','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
+        
      var sc = "";
      for(school in libs){
-         sc = sc + "<p><a href='' onclick='changeSchool(&quot;" + libs[school] + "&quot;);'>" + libs[school] + "</a></p>";
+         sc = sc + "<p><a href='' onclick='changeSchool(&quot;" + libs[school] + "&quot;);'>" + pretty_libs[school] + "</a></p>";
      }
     $("#school").html(sc)
 
@@ -326,8 +345,13 @@ $(document).ready(function() {
 			$('#fixedstack').stackView({url: www_root + '/translators/recently.php?' + recentlyviewed, search_type: 'recently', ribbon: 'You recently viewed these'});
 		}
 		else if(compare === 'callview') {
-            console.log(loc_call_num_sort_order);
-            console.log(this_details.loc_call_num);
+            
+            if(current_school == 'PANO'){
+                this_details.loc_call_num = this_details.loc_call_num[1];
+            }else{
+                this_details.loc_call_num = this_details.loc_call_num[0];
+            }
+            
             $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: this_details.loc_call_num, ribbon: 'Infinite Stack: the library arranged by call number'});
 		}
 		else if(compare === 'alsoviewed') {
@@ -615,7 +639,7 @@ function match_values_marc(data){
     this_details.electronic=false;
     title_nf = "";
     sub_title = "";
-    this_details.classification = "";
+    this_details.classification = ["",""];
     this_details.authors = []
     
     this_details.datafield.forEach(function (field){
@@ -627,16 +651,30 @@ function match_values_marc(data){
                 if(field.subfield instanceof Array) {
                     anchor_subject = field.subfield[0];
 
-                    if(field.subfield instanceof Array){
-                        subject.push(field.subfield[0]);
-                    }else{
-                        subject.push(field.subfield);
-                    }
+                    field.subfield.forEach(function(obj){
+                        if(!(obj.indexOf("NOBLE") >= 1 || obj.indexOf("OCoLC") >= 1)){
+                            subject.push(obj);
+                        }
+                    });
+                }
+            }
+        
+            //field 651 contains geographically located data
+        
+            if(field['@attributes'].tag == '651'){
+                if(field.subfield instanceof Array) {
+                    anchor_subject = field.subfield[0];
+
+                    field.subfield.forEach(function(obj){
+                        if(!(obj.indexOf("NOBLE") >= 1 || obj.indexOf("OCoLC") >= 1) ){
+                            subject.push(obj);
+                        }
+                    });
                 }
             }
             
             if(field['@attributes'].tag == '245'){
-                if(field.subfield instanceof Array && field.subfield.length >= 3){
+                if(field.subfield instanceof Array && field.subfield.length >= 2){
                     sub_title = field.subfield[1];
                     title_nf = field.subfield[0];
                 }else{
@@ -665,21 +703,21 @@ function match_values_marc(data){
             if(field['@attributes'].tag == '050' && this_details.classification){
                 if(field.subfield instanceof Array){
                   field.subfield.forEach(function(each){
-                       this_details.classification = this_details.classification + each;
+                       this_details.classification[0] = this_details.classification[0] + each + " ";
                   });
                 }else{
-                    this_details.classification = field.subfield;
+                    this_details.classification[0] = field.subfield;
                 }
             }
             
-            //if there's a more specific classification number (092) use it instead of the 050 tag.  The logic is that the 092 tag always comes after the 050 tag (?), and thus will replace the old tag.
+            //we're setting classification to be an array now, so it can store both the 092 and 050 fields
             if(field['@attributes'].tag == '092'){
                 if(field.subfield instanceof Array){
                   field.subfield.forEach(function(each){
-                       this_details.classification = this_details.classification + each + " ";
+                       this_details.classification[1] = this_details.classification[1] + each + " ";
                   });
                 }else{
-                    this_details.classification = field.subfield;
+                    this_details.classification[1] = field.subfield;
                 }
             }
             
@@ -720,7 +758,7 @@ function match_values_marc(data){
     });
     
     //Try to remove some unneeded stuff to lighten computational load!
-    //delete this_details.datafield;
+    delete this_details.datafield;
     
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
@@ -729,12 +767,10 @@ function match_values_marc(data){
     //append subtitle to title
     this_details.title = this_details.title + " " + sub_title;
     
-    
     if(!this_details.electronic){
         if(this_details.classification){
             this_details.loc_call_num = this_details.classification;
             loc_call_num_sort_order = this_details.loc_call_num;
-            console.log(loc_call_num_sort_order);
         }
     }
    
@@ -788,6 +824,11 @@ function changeSchool(school_name){
     
 }
 
+function isInArray(value, array) {
+  return array.indexOf(value) > -1;
+}
+ 
+    
 function eliminateDuplicatesStrings(arr) {
   var i,
       len=arr.length,
