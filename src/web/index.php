@@ -16,7 +16,7 @@ EOF;
 
 <script>
    
-data = "&key=school&value=NOBLE";
+data = "&key=school&value=PANO";
 $.ajax({
     url: "<?php echo $www_root ?>/sl_funcs.php?func=set_session_var",
     type: "get",

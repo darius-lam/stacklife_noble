@@ -245,7 +245,7 @@ $(document).ready(function() {
         
     var libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PANO','PANA','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
     
-    var pretty_libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PA-OWHL','PA-ADDIS','PANB','PANC', 'PANG', 'PANI', 'PANK','PANP'];
+    var pretty_libs = ['BEVERLY','BUNKERHILL','DANVERS','ENDICOTT','EVERETT','GLOUCESTER','GORDON','LYNNFIELD','LYNN','MARBLEHEAD','MELROSE','MERRIMACK','MIDDLESEX','MONTSERRAT','NOBLE','NORTHSHORE','NORTHERNESSEX','PEABODY','READING','REVERE','SALEM','SALEMSTATE','SAUGUS','STONEHAM','SWAMPSCOTT','WAKEFIELD','WINTHROP','PAOWHL','PAADDIS','PABRACE','PACAMD', 'PACLIFT', 'PA-IFC', 'PAPOLK','PAPEABOD'];
         
      var sc = "";
      for(school in libs){
@@ -797,15 +797,18 @@ function match_values_marc(data){
 function changeSchool(school_name){
    
     data = "&key=school&value=" + school_name;
+    console.log(www_root + "/sl_funcs.php?func=set_session_var");
     $.ajax({
         url: www_root + "/sl_funcs.php?func=set_session_var",
         type: "get",
         data: data,
         success: function(data){
+            
             current_school = data;
+            console.log(current_school);
         }
     });
-    
+    debugger;
 }
 
 function isInArray(value, array) {
