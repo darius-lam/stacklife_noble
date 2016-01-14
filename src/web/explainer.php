@@ -29,7 +29,7 @@ loc_call_num_sort_order = '';
 anchor_subject = '',
 uniform_id = '',
 uniform_count = '',
-uid = '2241578',
+uid = '2276024',
 title = '',
 stackheight = $(window).height();
 
@@ -39,6 +39,8 @@ var www_root = '<?php echo $www_root ?>';
 var recentlyviewed = '';
 var alsoviewed = new Array();
 
+var current_school = '<?php echo $_SESSION["school"]?>';    
+    
 var GBSArray = ['ISBN:<?php echo $isbn_trim ?>'];
 
 google.load("books", "0");
@@ -131,7 +133,7 @@ $(document).ready(function() {
 }
 
 .note4a {
-	margin:127px 0 0 58px;
+	margin:80px 0 0 58px;
 	-webkit-transform: rotate(-1deg); 
 	-moz-transform: rotate(-1deg); 
 	-o-transform: rotate(-1deg);
@@ -139,23 +141,23 @@ $(document).ready(function() {
 }
 
 .note5 {
-	margin:-110px 0 0 170px;
-	-webkit-transform: rotate(-1deg); 
-	-moz-transform: rotate(-1deg); 
-	-o-transform: rotate(-1deg);
-	-ms-transform: rotate(-1deg); 
-}
-
-.note6 {
-	margin:-65px 0 0 130px;
-		-webkit-transform: rotate(2deg); 
+	margin:370px 0 0 -50px;
+	-webkit-transform: rotate(2deg); 
 	-moz-transform: rotate(2deg); 
 	-o-transform: rotate(2deg);
 	-ms-transform: rotate(2deg); 
 }
 
+.note6 {
+	margin:190px 0 0 -70px;
+		-webkit-transform: rotate(0deg); 
+	-moz-transform: rotate(0deg); 
+	-o-transform: rotate(0deg);
+	-ms-transform: rotate(0deg); 
+}
+
 .note7 {
-	margin:50px 0 0 125px;
+	margin:350px 0 0 750px;
 		-webkit-transform: rotate(1deg); 
 	-moz-transform: rotate(1deg); 
 	-o-transform: rotate(1deg);
@@ -175,151 +177,184 @@ $(document).ready(function() {
 <!-- /////////////////// BODY ////////////////////////// -->
 <body>
   	<div class="container group row">
-				
+
 		<div style="display:none;">
 			<div id="viewerCanvas" style="width: 610px; height: 725px"></div>
 		</div> <!--end hidden viewerCanvas-->
 
 
 		<div id="contextData" class="group span2">
-		
+
 			<?php require_once('includes/logo.php');?>
-		
+           
+           <br>
+            <!--- Change School Panel -->   
+            <h3 class="clickable slide-more school-selector">Library: <?php echo $_SESSION["school"]?><span class="arrow"></span></h3>
+            <div class="slide-content" style="display:none;">
+             
+              <div id="school">
+                 
+                  
+              </div>
+              
+            </div>
+            <br>
+            
+            <span class="heading">Infinite Stack</span>
+            <br>
+            
         	<div id="overlay-buttons">
           		<div id="shelves-panel"></div>
           		<div id="tagGraph"></div>
-          		
     		</div><!--end overlay-buttons-->
-    		
+            
         	<form id="book-tags-form" method="post">
       			<input type="text" id="bookTags" name="bookTags" class="required" onfocus="if (this.value=='tag it') this.value = ''" type="text" value="tag it"/>
-            	
+
             	<input type="submit" name="submit_tags"  id="submit_tags" value="Go!"/>
         	</form>
-        		
-        	<div class="book-tag-success"><p><span style="display:none;"></span></p></div>
-        	
-    		
+
+        	<div class="book-tag-success"><p><span style="display:none;"></span></p></div>    
       	</div><!-- end contextData -->
 
+          <div class="post-it note7">
+      			<p>You can check out this book on Google, Amazon, or NOBLE!</p>
+      		</div>
 
       	<div class="main span8">
       		<div class="post-it note3">
       			<p>Depth of the color blue indicates amount of use by the NOBLE community.</p>
       			
-      			<p>We call this &quot;StackScore&quot;</p>
+      			<p>This is called &quot;StackScore&quot;</p>
       		</div>
       		
       		<div class="post-it note4">
       			<p>Thickness of the book is based on page count, length indicates the actual length</p>
       		</div>
+      		
       		<div class="post-it note4a">
       			<p>Navigate the stack by clicking arrows, scrolling or swiping</p>
       		</div>
-      	<!-- -->
+      		
+      		<div class="post-it note5">
+      			<p>Click on a subject heading to bring up that stack</p>
+      		</div>
+      		
+      		<div class="post-it note6">
+      			<p>If available, Infinite Stack lets you see other books physically located nearby!</p>
+      		</div>
+
 			<div id="fixedstack"></div>
-			
       	</div><!-- end main-->
-		
+
 		<div class="span4-negative offset6">
 			<?php require_once('includes/searchbox.php');?>
-			<div id="item-panel" class="itemData-container"></div>   
-		</div> 
-                
+			<div id="item-panel" class="itemData-container"></div>
+		</div>
+
       <div id="contextData" class="group">
         <div id="overlay-buttons">
           <div id="shelves-panel"></div>
-  
+
           <div id="tagGraph"></div>
         </div><!--end overlay-buttons-->
-          
-       
-        
+
+
+
       <div id="fixedclear"></div>
     </div> <!--end container-content-->
-    
   </div><!--end container-->
 
 
 	<!-- //////////begin templates//////////////////// -->
-	
 
-  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>
+
+  <!--<script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=OCLC:<?php echo $oclcnum ?>,ISBN:<?php echo $isbn_trim ?>&callback=ProcessGBSBookInfo"></script>-->
+  
+  <script id="gbscript" type="text/javascript" src="http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:0738531367&callback=ProcessGBSBookInfo"></script>
   </div> <!--end wrapper-->
-   
+
   <script id="item-template" type="text/x-handlebars-template">
   <div id="itemData">
     <h1 class="home-stack">
-      {{title}}{{#if sub_title}} : {{sub_title}}{{/if}}
+      {{title}}{{#if sub_title}} {{sub_title}}{{/if}} {{#if electronic}}<img src="<?php echo $www_root ?>/images/lightning.png" alt="electronic resource" width="25"/>{{/if}}
     </h1>
     <div id="creator_container">
     {{{creators}}}
     </div>
     <img class="cover-image" src="http://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg" />
-    	<div class="post-it note5">
-      		<p>Go to the item&apos;s entry in Noblenet, or find it in Google Books or Amazon</p>
-      	</div>
     <ul class="access">
+      
       {{#if url}}
       <li><a href="{{url}}">Online Access</a></li>
       {{/if}}
       <li class="button-google-disabled"><a class="button-google-disabled" href="#viewerCanvas"><img src="<?php echo $www_root ?>/images/gbs_preview_disabled.png" /></a></li>
       <li class="button-google"><a id="gviewer" class="button-google" href="#viewerCanvas" style="display:none;"><img src="<?php echo $www_root ?>/images/gbs_preview.png" border="0" /></a></li>
       <li><a id="amzn" href="http://www.amazon.com/dp/{{isbn}}" target="_blank"><img class="buy" src="<?php echo $www_root ?>/images/amazon.png" alt="Amazon"/></a></li>
-      <li><a href="http://evergreen.noblenet.org/eg/opac/record/{{id}}" target="_blank"><img src="<?php echo $www_root ?>/images/noble_small.jpg" alt="NobleNet" height="42"/></a></li>
-      {{#if wp_url}}          	
+      {{#if noble_link}}<li><a href="{{noble_link}}" target="_blank"><img src="<?php echo $www_root ?>/images/noble_small.jpg" alt="NobleNet" height="42"/></a></li>{{/if}}
+      {{#if wp_url}}
        <li><a href="{{wp_url}}" target="_blank" ><img src="<?php echo $www_root ?>/images/wikipedia.png" /></a></li>
       {{/if}}
-  
-     
+
+
     </ul>
 
-		<!-- <div id="availability-panel"></div>
-	    <div class="post-it note6">
-      		<p>Check availability across libraries in NOBLE</p>
-      	</div>	-->    	
-    <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}}, {{publisher}}{{/if}}{{#if pub_date}}, {{pub_date}}{{/if}}</h3>
+{{#if npr_url}}
+<ul style='clear:both;'>
+<div>
+<img src="<?php echo $www_root ?>/images/npr.png" alt="Smiley face" width=60>
+      <audio controls>
+<source src="{{npr_url}}" type="audio/mpeg">
+Your browser does not support the audio element.
+</audio>
+</div>
+</ul>
+{{/if}}
+		<div id="availability-panel"></div>
+
+    <h3 class="imprint">{{#if pub_location}}{{pub_location}}{{/if}}{{#if publisher}} {{publisher}}{{/if}}{{#if pub_date}} {{pub_date}}{{/if}}</h3>
     
+    
+
     <h3 class="clickable advanced-data slide-more">Advanced Bibliographic Data<span class="arrow"></span></h3>
-    
+
     <div class="advanced-data-box slide-content" style="display:none;">
       <ul>
         <li class="advanced-isbn"><p>ISBN: {{isbn}}</p></li>
-        <li class="advanced-oclc"><p>OCLC: {{oclc}}</p></li>
+        {{#if loc_call_num}} <li class="advanced-isbn"><p>Call Number(s): {{loc_call_num}}</p></li>{{/if}}
+        {{#if oclc}}<li class="advanced-oclc"><p>OCLC: {{oclc}}</p></li>{{/if}}
         <li class="advanced-language"><p>Language: {{language}}</p></li>
       </ul>
     </div>
-    
-    
-    <div class="post-it note7">
-        <p>StackScore represents community usage, 1 - 100</p>
-    </div>
-    
+
     <h3 class="clickable slide-more toc-title">Table of Contents<span class="arrow"></span></h3>
     <div class="slide-content" style="display:none;">
       <div id="toc"></div>
     </div>
+    
+    
+    <h3 class="clickable slide-more summary-title">Summary<span class="arrow"></span></h3>
+    <div class="slide-content" style="display:none;">
+      <div id="summary"></div>
+    </div>
+    
     </div>
     
     
-    <div id="all-rank">	            
+    <div id="all-rank" class="slide-more">
     <div id="shelfRankCalc" class="button-shelfRank">
       <span class="unpack">StackScore</span>
       <span class="shelfRank">{{shelfrank}}</span>
     </div><!--end shelfRankCalc-->
   </div><!--end all-rank-->
   
- <!-- <div id="rank-math" class="slide-content" style="display:none;">
+  <div id="rank-math" class="slide-content" style="display:none;">
     <ul>
-      <li><p>Faculty checkouts: {{score_checkouts_fac}}</p></li>
-      <li><p>Undergrad checkouts: {{score_checkouts_undergrad}}</p></li>
-      <li><p>Graduate checkouts: {{score_checkouts_grad}}</p></li>
-      <li><p>Holding libraries: {{score_holding_libs}}</p></li>
+      <li><p>Circulation Count: {{circ_count}}</p></li>
     </ul>
-  </div>end rank-math-->
+  </div>
 
-  </script> 
-  
+  </script>
   <script id="availability-template" type="text/x-handlebars-template">
     <span class="button-availability {{#if any_available}}available-button{{else}}not-available-button{{/if}} slide-more"><span class="icon"></span>Availability<span class="arrow"></span></span>
 		<div id="availability" class="slide-content availibility-slide-content" style="display:none;">
@@ -327,9 +362,7 @@ $(document).ready(function() {
 		  {{#items}}
 		    <li class="{{#if available}}available{{else}}not-available{{/if}}">
 		      <span class="callno">{{library}} [{{call_num}}]</span>
-		      {{#if depository}}<a class="small-button" href="{{request}}">REQUEST</a>{{else}}
-		      {{#if available}}<span class="small-button sms">SMS</span>{{else}}
-		      {{#if request}}<a class="small-button" href="{{request}}">REQUEST</a>{{/if}}{{/if}}{{/if}}<br />
+		      {{#if available}}<span class="small-button sms">SMS</span>{{/if}}<br />
 		      {{status}}
 		    </li>
 		  {{/items}}
@@ -338,30 +371,29 @@ $(document).ready(function() {
 	</script>
 	<script id="shelves-template" type="text/x-handlebars-template">
 	  <ul>
-	  	{{#if loc_call_num_sort_order}}
+      
+        {{#if loc_call_num_match_school}}
+            {{#if not_noble}}
 			<li id="callview" class="button stack-button"><span class="reload">Infinite Stack</span></li>
 			{{else}}
-			<li id="callview" class="button-disabled">No Call Number Stack</li>
-			{{/if}}
-		</ul>
+			<li id="callview" class="button-disabled">No Stack for this Library</li>
+            {{/if}}
+        {{else}}
+            <li id="callview" class="button-disabled">No Call Number Stack</li>
+        {{/if}}
+        </ul>
 		 <br/>
     <span class="heading">Subject Stacks</span>
-    	<div class="post-it note1">
-      		<p>Click to stack items by subject area</p>
-    	</div>
     <ul>
-      {{#if ut_count}}
-			<li id="uniform" class="button stack-button"><span class="reload">All editions</span></li>
-			{{/if}}
-			{{#lcsh}}
-			<li class="subject-button"><span class="reload">{{this}}</span></li>
-			{{/lcsh}}
+        {{#if ut_count}}
+            <li id="uniform" class="button stack-button"><span class="reload">All editions</span></li>
+        {{/if}}
+        {{#lcsh}}
+            <li class="subject-button"><span class="reload">{{this}}</span></li>
+        {{/lcsh}}
     </ul>
     <br/>
     <span class="heading">Community Stacks</span>
-    	<div class="post-it note2">
-      		<p>Add your own label (tags can include spaces)</p>
-    	</div>
     <ul>
       {{! <li id="alsoviewed" class="button stack-button"><span class="reload">People who viewed this also viewed these</span></li> }}
       <li id="recentlyviewed" class="button stack-button"><span class="reload">Recently Viewed</span></li>

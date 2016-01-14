@@ -1,7 +1,6 @@
 $(document).ready(function() {
-    
-    var isPublic = document.location.hostname.search("noblenet.org") !== -1;
-    
+	
+	
 	// Fetch data about the item
 	$.ajax({
   		url: www_root + '/translators/item.php',
@@ -9,32 +8,15 @@ $(document).ready(function() {
   		data: {query : uid, search_type : 'recordId', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-            //uid can either be ISBN or recordIdentifier!
-  			//uniform_count = data.mods.ut_count;
-  			//uniform_id = data.mods.ut_id;
-            
-            var this_details = match_values_marc(data);
-            // THIS MAY CAUSE PROBLEMS
-            draw_item_panel(this_details);
-            
-			if ( History.enabled ) {
-			  History.replaceState({data:this_details}, this_details.title, this_details.link);
-			}
-			else {
-			  draw_item_panel(this_details);
-			}
+  			
+			var this_details = match_values(data);
+
+			
+			 draw_item_panel(this_details);
+			
     }
 	});
-    
-    if (History.enabled) {
-        History.Adapter.bind(window,'statechange',function(){
-		  var State = History.getState();
-		  if(State.data.data) {
-		    draw_item_panel(State.data.data);
-		  }
-	  });
-    }
-    
+
 	$('#viewerCanvas').css('height', stackheight*.9).css('width', stackheight*.75);
 
 	$(window).resize(function() {
@@ -42,30 +24,39 @@ $(document).ready(function() {
 		$('.stackview').css('height', stackheight);
 		$('#viewerCanvas').css('height', stackheight*.9).css('width', stackheight*.75);
 	});
-	if(anchor_subject !== '') {
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: anchor_subject, ribbon: anchor_subject});
+
+	if(uniform_count > 0) {
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: $('#uniform').text()});
+		$('#uniform').addClass('selected-button');
+	}
+	else if (loc_call_num_sort_order) {
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
+		$('#callview').addClass('selected-button');
+	}
+	else if(anchor_subject !== '') {
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'lcsh', query: anchor_subject, ribbon: anchor_subject});
 		$('.subject-button:first').addClass('selected-button');
 	}
 	else if(anchor_subject === '') {
-		$('#fixedstack').html("<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><b>Sorry</b>, no Library of Congress call number or <br/>subject neighborhood found.");
+		$('#fixedstack').text('Sorry, no Library of Congress call number or subject neighborhood found.');
 	}
-
+	
 	$('.stackview').css('height', stackheight);
 
 	$('.slide-more').live('click', function() {
 		$(this).next('.slide-content').slideToggle();
 		$(this).find('.arrow').toggleClass('arrow-down');
 	});
-
+	
 	$('.sms').live('click', function() {
 
 		//find item locations
-
+	
 		var location = $(this).parent().find('.callno:first').text();
-
+	
 		//build form
-		var html = "";
-		if(location.length>0) {
+		var html = ""; 
+		if(location.length>0) {	
 			html = "<div id='wrap'><p>" + location + "<br />" + title + "</p><br /><form id='form'><input id='smstitle' type='hidden' value='" + title + "' /><input id='smslibrary' type='hidden' value='" + location + "' /><input id='smsnumber' type='text' size='12' maxlength='12' placeholder='your number' />";
 			html += "<select id='smscarrier'><option>Select a Carrier</option>";
 			html += "<option value=@txt.att.net>AT&T</option>";
@@ -83,8 +74,8 @@ $(document).ready(function() {
 		launchDialog(html);
 	});
 
-	// When an item in the stack is clicked, we update the book panel here
-	function draw_item_panel(item_details) {
+    
+    function draw_item_panel(item_details) {
 		// set our global var
         if(current_school == 'PANO' && item_details.loc_call_num && item_details.loc_call_num[1]){
             loc_call_num_sort_order = item_details.loc_call_num[1];
@@ -97,7 +88,7 @@ $(document).ready(function() {
         title = item_details.title
 		
         //uid = item_details.isbn;
-        uid = item_details.identifier;
+        uid = item_details.recordIdentifier;
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -166,7 +157,7 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
         
-		var isbn = item_details.identifier;
+		var isbn = item_details.isbn;
 
 		/**var oclc = '';
 		if (item_details.id_oclc) {
@@ -233,7 +224,7 @@ $(document).ready(function() {
 		var template = Handlebars.compile(source);
     $('#shelves-panel').html(template(item_details));
 
-    //NEED TO ADD
+    //NEED TO FIX THIS!!!
         
     /**$.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
       if(data) {
@@ -276,8 +267,24 @@ $(document).ready(function() {
         $(".summary-title").hide();
     }
         
+        
+        //NEED TO ADD!!! 
+        
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
 		if (isbn) {
+			/**$.ajax({
+				type: "GET",
+				url: slurl,
+				data: "isbn=" + isbn + "&function=check_amazon",
+				success: function(response){
+					if(response != 'false') {
+					  $('#amzn').attr('href', 'http://www.amazon.com/dp/' + response);
+						$('.buy').show();
+					} else {
+						$('.buy').hide();
+					}
+				}
+		  });**/
             
          $('#amzn').attr('href', 'http://www.amazon.com/gp/search?index=books&linkCode=qs&keywords=' + isbn);
 		} else {
@@ -288,6 +295,121 @@ $(document).ready(function() {
         $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
     }   
 
+	}
+    
+	// When an item in the stack is clicked, we update the book panel here
+	function draw_item_panel_old(item_details) {
+	
+		// set our global var
+		loc_call_num_sort_order = item_details.loc_call_num_sort_order;
+		title = item_details.title;
+		uid = item_details.id;
+		
+		// update our window title
+		document.title = title + ' | StackLife';
+
+		// store this as an "also viewed"
+		$.each(alsoviewed, function(i, item){
+      $.ajax({
+        type: "POST",
+        url: slurl,
+        data: "also="+ item + "&id=" + item_details.id + "&function=set_also_viewed",
+        success: function(){
+        }
+      });
+    });
+    alsoviewed.push(item_details.id);
+
+		// add to recently viewed
+		$.ajax({
+			type: "POST",
+			url: slurl,
+			data: "function=session_info&type=set&uid=" + item_details.id,
+			async: false
+		});
+		recentlyviewed += '&recently[]=' + uid;
+
+		// replace creator list
+		item_details.creators = '';
+		if(item_details.creator && item_details.creator.length > 0) {
+			var creator_markup_list = [];
+			$.each(item_details.creator, function(i, item){
+				creator_markup_list.push('<a class="creator" href="../../author/' + item + '">' + item + '</a>');
+			});
+
+			item_details.creators = creator_markup_list.join('<span class="divider"> | </span>');
+		}
+		
+ if(item_details.rsrc_key && item_details.rsrc_key.length > 0) {
+			$.each(item_details.rsrc_key, function(i, item){
+				if(item == 'wikipedia_org')
+				  item_details.wp_url = item_details.rsrc_value[i];
+			});
+		}
+
+		item_details.shelfrank = left_pad(item_details.shelfrank);
+
+		// Translate a total score value to a class value (after removing the old class)
+		$('.shelfRank, .itemData-container, .unpack').removeClass(function (index, css) {
+		    return (css.match(/color\d+/g) || []).join(' ');
+		});
+
+		$('.shelfRank, .itemData-container, .unpack').addClass('color' + get_heat(item_details.shelfrank));
+
+		// replace google books link
+		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
+		var isbn = '';
+		isbn = item_details.isbn;
+
+		/**var oclc = '';
+		if (item_details.id_oclc) {
+			oclc = item_details.id_oclc;
+		}
+		
+		item_details.oclc = oclc;**/
+		
+		var gbsrc = 'http://books.google.com/books?jscmd=viewapi&bibkeys=ISBN:' + isbn + '&callback=ProcessGBSBookInfo';
+		$("#gbscript").attr('src', gbsrc);		
+		
+		GBSArray = ['ISBN:' + isbn];
+		$.getScript($("#gbscript").attr('src'));
+
+
+		// Redraw our tags
+		drawTagNeighborhood();
+
+		var source = $("#item-template").html();
+		var template = Handlebars.compile(source);
+    $('#item-panel').html(template(item_details));
+    
+    var source = $("#shelves-template").html();
+		var template = Handlebars.compile(source);
+    $('#shelves-panel').html(template(item_details));
+    
+   /** $.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
+      if(data) {
+        var source = $("#availability-template").html();
+        var template = Handlebars.compile(source);
+        $('#availability-panel').html(template(data));
+      }
+    });**/
+    
+    $("#toc").html('');
+    if(item_details.tableOfContents) {
+        toc = item_details.tableOfContents;
+        toc = toc.replace(/--/g, '<br />').replace(/- -/g, '<br />').replace(/-/g, '<br />').replace(/[\/]/g, '<br />').replace(/[\\]/g, '<br />');
+        if(toc) {
+            $("#toc").html('<p>' + toc + '</p>')
+            $(".toc-title").show();
+        }
+    } else {
+        $(".toc-title").hide();
+    }
+		
+		if(item_details.this_button) {
+      $(".reload:contains('" + item_details.this_button + "')").parent().addClass('selected-button');
+    }
+
 	} //end draw item panel
 
 	// When a new anchor book is selected
@@ -297,21 +419,16 @@ $(document).ready(function() {
 		$.ajax({
   		url: www_root + '/translators/item.php',
   		dataType: 'json',
-  		data: {query : this_details.id, search_type : 'recordId', start : '0', limit : '1'},
+  		data: {query : this_details.id, search_type : 'id', start : '0', limit : '1'},
   		async: false,
   		success: function(data){
-            var this_details = match_values_marc(data);
-             if(isPublic){
-                ga('send', 'pageview', link);
-             }
-			  //data.docs[0].this_button = this_button;
-			  if(History.enabled) {
-			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier);
-                 
-			  }else {
-        	   draw_item_panel(this_details);
-              }
-        }
+			  var this_details = data.docs[0];
+			  data.docs[0].this_button = this_button;
+			  
+			 
+        	draw_item_panel(data.docs[0]);
+        
+      }
 	  });
 		$('.active-item').removeClass('active-item');
 		$(this).parent().addClass('active-item');
@@ -323,36 +440,25 @@ $(document).ready(function() {
 	  $(this).addClass('selected-button');
 		var compare = $.trim($(this).attr('id'));
 		if(compare === 'recentlyviewed') {
-            if(isPublic){
-                ga('send', 'pageview', "Recently Viewed");
-            }
 			$('#fixedstack').stackView({url: www_root + '/translators/recently.php?' + recentlyviewed, search_type: 'recently', ribbon: 'You recently viewed these'});
 		}
 		else if(compare === 'callview') {
-            
-            if(current_school == 'PANO'){
-                this_details.loc_call_num = this_details.loc_call_num[1];
-            }else{
-                this_details.loc_call_num = this_details.loc_call_num[0];
-            }
-            
-            $('#fixedstack').stackView({url: www_root + '/translators/nearby.php', search_type: 'loc_call_num_sort_order', id: this_details.loc_call_num, ribbon: 'Infinite Stack: the library arranged by call number'});
+			$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'loc_call_num_sort_order', id: loc_call_num_sort_order, ribbon: 'Infinite Stack: the library arranged by call number'});
 		}
 		else if(compare === 'alsoviewed') {
 			$('#fixedstack').stackView({url: www_root + '/translators/also.php', query: uid, search_type: 'also', ribbon: 'People who viewed this also viewed these'});
 		}
+		else if(compare === 'uniform') {
+			$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'ut_id', query: uniform_id, ribbon: 'All editions'});
+		}
 	});
 
 	$('.subject-button').live('click',function() {
-        if(isPublic){
-            ga('send', 'pageview', "Subject: " + $(this).text());
-        }
-        
 		$('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
-		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'keyword', query: $(this).text(), ribbon: $(this).text()});
+		$('#fixedstack').stackView({url: www_root + '/translators/cloud.php', search_type: 'lcsh', query: $(this).text(), ribbon: $(this).text()});
 	});
-
+	
 	$('.wp_category-button').live('click',function() {
 	  $('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
@@ -360,9 +466,6 @@ $(document).ready(function() {
 	});
 
 	$('.tag-button').live('click', function() {
-        if(isPublic){
-            ga('send', 'pageview', "Tag: " + $(this).text());
-        }
 	  $('.selected-button').removeClass('selected-button');
 	  $(this).addClass('selected-button');
 		$('#fixedstack').stackView({url: www_root + '/translators/tag.php', query: $('span', this).text(), search_type: 'tag', ribbon: $('span', this).text()});
@@ -380,7 +483,7 @@ $(document).ready(function() {
 			bookTags: "tag?"
 		},
 		submitHandler: function(form) {
-			var tags = encodeURIComponent($('#bookTags').attr('value'));
+			var tags     = encodeURIComponent($('#bookTags').attr('value'));
 			$.ajax({
 				type: "POST",
 				url: slurl,
@@ -411,7 +514,6 @@ function drawTagNeighborhood(){
 		if(data.tags.length > 0) {
 			$.each(data.tags, function(i, val) {
 				var percentage = val.freq/val.biggest * 100;
-                
 				percentage = Math.round(percentage) + '%';
 				tagList += '<li class="tag-button button"><span class="reload">' + val.tag + '</span> (' + val.freq + ')</li>';
 			});
@@ -424,10 +526,9 @@ function drawTagNeighborhood(){
 function ProcessGBSBookInfo(booksInfo) {
 	$('.button-google').hide();
 	$('.button-google-disabled').show();
-	for (is in booksInfo) {
-        
-		var GBSParts = is.split(':');
-		var bookInfo = booksInfo[is];
+	for (isbn in booksInfo) {
+		var GBSParts = isbn.split(':');
+		var bookInfo = booksInfo[isbn];
 		if (bookInfo) {
 			if ((bookInfo.preview == "full" || bookInfo.preview == "partial") && bookInfo.embeddable) {
 				$('.button-google-disabled').hide();
@@ -435,8 +536,8 @@ function ProcessGBSBookInfo(booksInfo) {
 				$("a#gviewer").fancybox({
 					'onStart' : initialize
 				});
-			}
-        }
+			} 
+        } 
     }
 }
 
@@ -449,7 +550,7 @@ function initialize() {
   viewer.load(GBSArray, alertNotFound);
 }
 
-function launchDialog(html){
+function launchDialog(html){ 
 	var $dialog = $('<div class="remove"></div>')
 		.html(html)
 		.dialog({
@@ -458,7 +559,7 @@ function launchDialog(html){
 			modal: true,
 			resizable: false,
 			width: 450 ,
-			buttons: { 'Text me': function() {
+			buttons: { 'Text me': function() { 
 				var data = 'number=' + $('#smsnumber').val();
 				data += '&carrier=' + $('#smscarrier').val();
 				data += '&library=' + $('#smslibrary').val();
@@ -472,10 +573,10 @@ function launchDialog(html){
 					}
 				});
 				$(this).dialog('close');
-			}}
+			}} 
 		});
 	$dialog.dialog('open');
-	kill = 0;
+	kill = 0;	
 }
 
 // Here we pad any values less than 10 with a 0
@@ -486,136 +587,7 @@ function left_pad(value) {
 	return value;
 }
 
-function match_values_mods(data){
-    
-    var subject = [];
-    
-    //-------------------------------
-    //get a list of subjects from the book
-    if(data.mods.subject instanceof Array) {
-        anchor_subject = data.mods.subject[0].topic;
-
-        data.mods.subject.forEach(function(item){
-            if(item.topic){
-                if(item.topic instanceof Array){
-                    item.topic.forEach(function(subtop){
-                        subject.push(subtop);
-                    })
-                }else{
-                    subject.push(item.topic);
-                }
-            }
-            
-        })
-
-        if(anchor_subject instanceof Array){
-            anchor_subject = anchor_subject[0];   
-        }
-    }else if(data.mods.subject instanceof Object){
-        anchor_subject = data.mods.subject.topic;
-        subject = data.mods.subject.topic;
-    }
-    //------------------------------------------
-
-    
-    this_details = data.mods;
-    
-    sub_title="";
-    if(this_details.titleInfo instanceof Array){
-        title_nf = this_details.titleInfo[0].title;
-        if(this_details.titleInfo[0].subTitle){
-            sub_title = this_details.titleInfo[0].subTitle;
-        }
-    }else{
-        title_nf = this_details.titleInfo.title;
-        if(this_details.titleInfo.subTitle){
-            sub_title = this_details.titleInfo.subTitle;
-        }
-    }
-    
-    //Setting up some variables to make it easier for templating
-    this_details.lcsh = subject;
-    this_details.title = title_nf.replace(/\//g,"");
-    //.replace(/\belectronic\b/, "").replace(/\bresource\b/,"").replace(/[\[\]']+/g,"")
-    
-    //append subtitle to title
-    this_details.title = this_details.title + " " + sub_title;
-    
-    //test feature to render lightning logo in front of electronic resources
-    this_details.electronic=false;
-    if(this_details.genre){
-      if(this_details.genre instanceof Array){
-          this_details.genre.forEach(function(each){
-               if(each == 'Electronic books.'){
-                   this_details.electronic = true;
-               }
-          })
-        }else if(this_details.genre == 'Electronic books.'){
-            this_details.electronic = true;
-        }
-    }
-    
-    if(!this_details.electronic){
-        if(this_details.classification){
-            if(this_details.classification instanceof Array){
-               this_details.loc_call_num = this_details.classification[0];
-            }else{
-                this_details.loc_call_num = this_details.classification;
-            }
-            loc_call_num_sort_order = this_details.loc_call_num
-        }
-    }
-    
-    
-    
-    place = this_details.originInfo.place;
-    if(place instanceof Array){
-        place.forEach(function(entry){
-            if(entry.text){
-                this_details.pub_location = entry.text;
-            }
-        })
-    }else{
-        this_details.pub_location = place.text;
-    }
-    this_details.publisher = this_details.publisher;
-    this_details.pub_date = this_details.dateIssued;
-    
-    //---------------
-    // Shelfrank Beta
-    //---------------
-    this_details.circ_count = this_details.shelfrank;
-    if(this_details.shelfrank >= 400){
-        this_details.shelfrank=100;
-    }else{
-        this_details.shelfrank = Math.floor(this_details.shelfrank/4);
-    }
-    
-    this_details.title_link_friendly = title_nf.toLowerCase().replace(/[^a-z0-9_\s-]/g,"");
-    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s-]+/g, " ");
-    this_details.title_link_friendly = this_details.title_link_friendly.replace(/\s+$/g, "");
-    this_details.title_link_friendly = this_details.title_link_friendly.replace(/[\s_]/g, "-");
-
-    //add noblenet permalink support
-    this_details.noble_link = "http://evergreen.noblenet.org/eg/opac/record/" + this_details.recordInfo.recordIdentifier;
-    
-    if((typeof this_details.identifier[0]['@attributes'] != 'undefined') && (this_details.identifier[0]['@attributes'].invalid == 'yes')){
-        link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;   
-    }else{
-        //may run into errors with this regex.
-        isbn = this_details.identifier[0].replace(/\s.*/,"");
-        if(isbn.length == 10 || isbn.length == 13){
-          link = "../" + this_details.title_link_friendly + "/" + this_details.recordInfo.recordIdentifier;
-          this_details.isbn = isbn;
-        }
-        this_details.id = this_details.recordInfo.recordIdentifier; 
-    }
-    return this_details;
-}
-
-
-
-function match_values_marc(data){
+function match_values(data){
     
     var subject = [];
     
@@ -740,9 +712,9 @@ function match_values_marc(data){
                 }
             }
     });
-    
+    console.log(this_details);
     //Try to remove some unneeded stuff to lighten computational load!
-    delete this_details.datafield;
+    //delete this_details.datafield;
     
     //Setting up some variables to make it easier for templating
     this_details.lcsh = subject;
@@ -779,12 +751,12 @@ function match_values_marc(data){
 
     if(this_details.identifier){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier;   
-        this_details.isbn = this_details.identifier;
+        isbn = this_details.identifier;
         this_details.id = this_details.recordIdentifier; 
     }else{
         //NEED TO FIX
         this_details.identifier = "N/a";
-        this_details.isbn = this_details.identifier;
+        isbn = this_details.identifier;
         this_details.id = this_details.recordIdentifier; 
         link = "../" + this_details.title_link_friendly + "/3631519"; 
     }
@@ -792,38 +764,3 @@ function match_values_marc(data){
     return this_details;
 }
 
-
-
-function changeSchool(school_name){
-   
-    data = "&key=school&value=" + school_name;
-    $.ajax({
-        url: www_root + "/sl_funcs.php?func=set_session_var",
-        type: "get",
-        data: data,
-        success: function(data){
-            current_school = data;
-        }
-    });
-    
-}
-
-function isInArray(value, array) {
-  return array.indexOf(value) > -1;
-}
- 
-    
-function eliminateDuplicatesStrings(arr) {
-  var i,
-      len=arr.length,
-      out=[],
-      obj={};
-  
-  for (i=0;i<len;i++) {
-    obj[arr[i]]=0;
-  }
-  for (i in obj) {
-    out.push(i);
-  }
-  return out;
-}

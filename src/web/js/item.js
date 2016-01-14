@@ -97,7 +97,7 @@ $(document).ready(function() {
         title = item_details.title
 		
         //uid = item_details.isbn;
-        uid = item_details.recordIdentifier;
+        uid = item_details.identifier;
 
 		// update our window title
 		document.title = title + ' | StackLife';
@@ -166,7 +166,7 @@ $(document).ready(function() {
 		// replace google books link
 		// get the google books info for our isbn and oclc (and if those are empty, use 0s)
         
-		var isbn = item_details.isbn;
+		var isbn = item_details.identifier;
 
 		/**var oclc = '';
 		if (item_details.id_oclc) {
@@ -233,7 +233,7 @@ $(document).ready(function() {
 		var template = Handlebars.compile(source);
     $('#shelves-panel').html(template(item_details));
 
-    //NEED TO FIX THIS!!!
+    //NEED TO ADD
         
     /**$.getJSON(www_root + '/translators/availability.php?id=' + item_details.id_inst, function(data) {
       if(data) {
@@ -276,24 +276,8 @@ $(document).ready(function() {
         $(".summary-title").hide();
     }
         
-        
-        //NEED TO ADD!!! 
-        
 		// If we have our first isbn, get affiliate info. if not, hide the DOM element
 		if (isbn) {
-			/**$.ajax({
-				type: "GET",
-				url: slurl,
-				data: "isbn=" + isbn + "&function=check_amazon",
-				success: function(response){
-					if(response != 'false') {
-					  $('#amzn').attr('href', 'http://www.amazon.com/dp/' + response);
-						$('.buy').show();
-					} else {
-						$('.buy').hide();
-					}
-				}
-		  });**/
             
          $('#amzn').attr('href', 'http://www.amazon.com/gp/search?index=books&linkCode=qs&keywords=' + isbn);
 		} else {
@@ -440,10 +424,10 @@ function drawTagNeighborhood(){
 function ProcessGBSBookInfo(booksInfo) {
 	$('.button-google').hide();
 	$('.button-google-disabled').show();
-	for (isbn in booksInfo) {
+	for (is in booksInfo) {
         
-		var GBSParts = isbn.split(':');
-		var bookInfo = booksInfo[isbn];
+		var GBSParts = is.split(':');
+		var bookInfo = booksInfo[is];
 		if (bookInfo) {
 			if ((bookInfo.preview == "full" || bookInfo.preview == "partial") && bookInfo.embeddable) {
 				$('.button-google-disabled').hide();
@@ -795,12 +779,12 @@ function match_values_marc(data){
 
     if(this_details.identifier){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier;   
-        isbn = this_details.recordIdentifier;
+        this_details.isbn = this_details.identifier;
         this_details.id = this_details.recordIdentifier; 
     }else{
         //NEED TO FIX
         this_details.identifier = "N/a";
-        isbn = this_details.identifier;
+        this_details.isbn = this_details.identifier;
         this_details.id = this_details.recordIdentifier; 
         link = "../" + this_details.title_link_friendly + "/3631519"; 
     }
