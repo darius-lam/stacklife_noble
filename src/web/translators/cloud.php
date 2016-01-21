@@ -46,6 +46,7 @@
   $i = 0;
   foreach($book_data->record as $item) {
     $title = '';
+    $creator = '';
     $author = '';
     $loc_sort_order = "";
       
@@ -54,6 +55,10 @@
         
         //Author(s)
         if($field->attributes()->tag == '100'){
+            $creator  = array(json_decode(json_encode($field->subfield),true)[0]);
+        }
+        
+        if($field->attributes()->tag == '700'){
             $creator  = array(json_decode(json_encode($field->subfield),true)[0]);
         }
         

@@ -802,6 +802,7 @@ function changeSchool(school_name){
         type: "get",
         data: data,
         success: function(data){
+            console.log(data);
             current_school = data;
         }
     });

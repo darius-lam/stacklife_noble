@@ -779,14 +779,15 @@ function match_values_marc(data){
 
     if(this_details.identifier){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier;   
-        this_details.isbn = this_details.identifier;
+        
+        console.log(this_details.identifier
+        //if(this_details.identifier.length == 10){
+        //    this_details.isbn = convertISBN(this_details.identifier);
+        //}else{
+            this_details.isbn = this_details.identifier;
+        //}
+        
         this_details.id = this_details.recordIdentifier; 
-    }else{
-        //NEED TO FIX
-        this_details.identifier = "N/a";
-        this_details.isbn = this_details.identifier;
-        this_details.id = this_details.recordIdentifier; 
-        link = "../" + this_details.title_link_friendly + "/3631519"; 
     }
     
     return this_details;
@@ -808,7 +809,6 @@ function changeSchool(school_name){
             console.log(current_school);
         }
     });
-    debugger;
 }
 
 function isInArray(value, array) {
@@ -829,4 +829,113 @@ function eliminateDuplicatesStrings(arr) {
     out.push(i);
   }
   return out;
+}
+
+function convertISBN(isbn)
+{
+    if (isbn.length == 10 || isbn.length == 13) 
+    {
+
+        if (isbn.length == 13)
+        {
+            if (isbn.substring(0, 3) == "978")
+            {
+                if(validISBN13(isbn))
+                {
+                    var isbn2 = isbn.substring(3, 12);				
+                    var isbn10 = String(isbn2) + String(genchksum10(isbn2));
+                    return isbn10;	
+                }
+                else
+                {
+                    return 'The number you entered is not a valid ISBN';
+                }
+            }
+            else
+            {
+                return "Only ISBN-13 numbers begining with 978 can be converted to ISBN-10.";
+            }
+        }
+
+        if (isbn.length == 10)
+        {
+            if(validISBN10(isbn))
+            {
+                var isbn2 = "978" + isbn.substring(0, 9);
+                var isbn13 = String(isbn2) + String(genchksum13(isbn2));
+                return isbn13;
+            }
+            else
+            {
+                return 'The number you entered is not a valid ISBN';
+            }
+        }
+
+
+    }
+    else
+    {
+        return 'The number you entered must be 10 or 13 digits long. Please try again.';
+    }
+}
+	
+function validISBN10(isbn)
+{
+    isbn = isbn.toUpperCase(); 
+    if(genchksum10(isbn.substring(0, 9)) == isbn.substring(9, 10)) return true;
+    else return false;
+}
+
+
+function validISBN13(isbn)
+{
+    if(genchksum13(isbn.substring(0, 12)) == isbn.substring(12, 13)) return true;
+    else return false;
+}
+
+function genchksum13(isbn)
+{
+
+    var oddNumbs = 0;
+    var evenNumbs = 0;
+    var check = 0;
+
+    for (var i=1; i<=12; i=i+2) 
+    {
+        oddNumbs = oddNumbs + Number(isbn.charAt(i-1));
+    }
+
+    for (var j=2; j<=12; j=j+2) 
+    {
+        evenNumbs = evenNumbs + Number(isbn.charAt(j-1));			
+    }
+
+    check = (oddNumbs + (evenNumbs*3)) % 10;
+
+    if (check!=0) 
+    {	
+        check = 10 - check;
+    }
+
+    return check; 
+
+}
+
+
+function genchksum10(isbn)
+{
+    var checkDigit = 0;
+
+    for(var i=1; i<=9; i++) 
+    {
+        checkDigit += ((10-i + 1) * isbn.charAt(i-1));
+    }
+
+    checkDigit = 11 - (checkDigit % 11);
+    var check = checkDigit;
+    if(checkDigit == 10) check='X';
+    else if(checkDigit==11) check='0';
+
+    return check;
+
 }
