@@ -304,13 +304,7 @@ $(document).ready(function() {
              if(isPublic){
                 ga('send', 'pageview', link);
              }
-			  //data.docs[0].this_button = this_button;
-			  if(History.enabled) {
-			    History.pushState({data:this_details}, this_details.title, "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier);
-                 
-			  }else {
         	   draw_item_panel(this_details);
-              }
         }
 	  });
 		$('.active-item').removeClass('active-item');
@@ -780,7 +774,6 @@ function match_values_marc(data){
     if(this_details.identifier){
         link = "../" + this_details.title_link_friendly + "/" + this_details.recordIdentifier;   
         
-        console.log(this_details.identifier
         //if(this_details.identifier.length == 10){
         //    this_details.isbn = convertISBN(this_details.identifier);
         //}else{
