@@ -98,7 +98,7 @@ include_once('includes/includes.php');
 					<br />
 								
 			<span class="question">Questions?</span><br />
-			<p>If you have any questions about this privacy statement, the practices of this site, or your dealings with this site, you can contact: dlam@andover.edu</p>
+			<p>If you have any questions about this privacy statement, the practices of this site, or your dealings with this site, you can contact: owhlibrary@andover.edu</p>
 					<br />
 								
 			<span class="question">Changes to this privacy statement</span><br />
